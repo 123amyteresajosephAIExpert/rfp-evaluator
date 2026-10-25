@@ -82,11 +82,12 @@ def build_graph(evaluator, progress: Callable[[str, float], None] | None = None)
 
     def create_batch(state: RunState):
         run_id = new_run_id()
-        db.create_run(run_id, state.get("rfp_title", ""), evaluator.label, state["criteria"], state.get("db_path"))
+        db.create_run(run_id, state.get("rfp_title", ""), evaluator.label, state["criteria"],
+                      state["supplier_inputs"], state.get("db_path"))
         report(f"Created batch {run_id}", 0.1)
         return {"rfp_run_id": run_id, "created_at": db.utc_now(), "status": "RUNNING",
                 "trace": [_t("3 Batch", "Orchestrator -> SQLite",
-                             f"Created run {run_id} for {len(state['supplier_inputs'])} supplier document(s)")]}
+                             f"Created run {run_id} with {len(state['supplier_inputs'])} PENDING supplier entries")]}
 
     def extract_documents(state: RunState):
         docs, not_eval, warnings, trace = {}, [], [], []
@@ -119,6 +120,18 @@ def build_graph(evaluator, progress: Callable[[str, float], None] | None = None)
         criteria = state["criteria"]
         names = [s["supplier_name"] for s in state["supplier_inputs"] if s["supplier_name"] in state["documents"]]
 
+        # Identical documents (same SHA-256) are evaluated once and share one scorecard, so the
+        # same proposal can never receive two different scores. Duplicates are flagged.
+        first_by_sha: dict[str, str] = {}
+        duplicates: dict[str, str] = {}
+        for n in names:
+            sha = state["documents"][n]["sha256"]
+            if sha in first_by_sha:
+                duplicates[n] = first_by_sha[sha]
+            else:
+                first_by_sha[sha] = n
+        unique = [n for n in names if n not in duplicates]
+
         def run_one(name):
             d = state["documents"][name]
             return evaluator.evaluate(name, d["text"], d["sha256"], criteria)
@@ -126,29 +139,39 @@ def build_graph(evaluator, progress: Callable[[str, float], None] | None = None)
         # LLM calls run in parallel threads; progress is reported from this (main) thread only,
         # and results are re-ordered by input order so the outcome is deterministic.
         results = {}
-        with ThreadPoolExecutor(max_workers=min(4, len(names))) as pool:
-            futures = {pool.submit(run_one, n): n for n in names}
+        with ThreadPoolExecutor(max_workers=min(4, len(unique))) as pool:
+            futures = {pool.submit(run_one, n): n for n in unique}
             for fut in as_completed(futures):
                 name = futures[fut]
                 results[name] = fut.result()
-                report(f"Evaluation Agent scored {name}", 0.2 + 0.6 * len(results) / len(names))
+                report(f"Evaluation Agent scored {name}", 0.2 + 0.6 * len(results) / len(unique))
+        dup_warnings = []
+        for dup, original in duplicates.items():
+            results[dup] = results[original]
+            dup_warnings.append(f"{dup}: document is identical to {original}'s (same SHA-256); "
+                                "the same scorecard was reused. Check for a duplicate submission.")
 
         raw, trace = {}, []
         for name in names:
             r = results[name]
             raw[name] = {"raw_text": r.raw_text, "model": r.model, "from_cache": r.from_cache,
-                         "attempts": r.attempts, "error": r.error, "notes": r.notes}
+                         "attempts": r.attempts, "error": r.error, "notes": r.notes,
+                         "reused_from": duplicates.get(name)}
             how = "cache hit (identical document + criteria)" if r.from_cache else f"{r.attempts} LLM call(s)"
             if r.error:
                 how += f"; problem: {r.error}"
+            if name in duplicates:
+                how = f"identical document to {duplicates[name]}; scorecard reused"
             trace.append(_t("4 Evaluate", f"Evaluation Agent ({r.model})", f"{name}: {how}"))
-        return {"raw_evaluations": raw, "trace": trace}
+        return {"raw_evaluations": raw, "trace": trace, "warnings": dup_warnings}
 
     def validate_scorecards(state: RunState):
         meta = {s["supplier_name"]: s for s in state["supplier_inputs"]}
         cards, warnings, trace = [], [], []
         for name, r in state["raw_evaluations"].items():
             v = validate_scorecard(r["raw_text"], name, state["criteria"], state["documents"][name]["text"], r["error"])
+            if r.get("reused_from"):  # shared scorecard of an identical document: the name differs by design
+                v.warnings = [w for w in v.warnings if "LLM reported supplier name" not in w]
             m = meta[name]
             cards.append({
                 "supplier_name": name,

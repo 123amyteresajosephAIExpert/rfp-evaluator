@@ -1,7 +1,7 @@
 {
-  "rfp_run_id": "RFP-20261025-080928-D6A774",
+  "rfp_run_id": "RFP-20261025-124347-AE9897",
   "rfp_title": "KML/HR/2026/014 - HR Service Delivery Platform",
-  "created_at": "2026-10-25T08:09:28Z",
+  "created_at": "2026-10-25T12:43:47Z",
   "status": "COMPLETED",
   "evaluation_mode": "OFFLINE_DEMO (keyword heuristic - no LLM)",
   "criteria": [
@@ -557,118 +557,118 @@
   "warnings": [],
   "execution_trace": [
     {
-      "time": "08:09:28",
+      "time": "12:43:47",
       "step": "2 Input",
       "actor": "Streamlit UI",
       "detail": "4 supplier PDF(s) received"
     },
     {
-      "time": "08:09:28",
+      "time": "12:43:47",
       "step": "1 Setup",
       "actor": "Orchestrator -> SQLite",
       "detail": "Loaded 5 active criteria: Technical Capability (30%), Implementation Plan (20%), Commercial Value (20%), Security & Compliance (20%), Support & Experience (10%)"
     },
     {
-      "time": "08:09:28",
+      "time": "12:43:47",
       "step": "3 Batch",
       "actor": "Orchestrator -> SQLite",
-      "detail": "Created run RFP-20261025-080928-D6A774 for 4 supplier document(s)"
+      "detail": "Created run RFP-20261025-124347-AE9897 with 4 PENDING supplier entries"
     },
     {
-      "time": "08:09:29",
+      "time": "12:43:47",
       "step": "4 Evaluate",
       "actor": "Document Tool",
       "detail": "Apex Systems: 2 pages, 4,792 chars via PyMuPDF"
     },
     {
-      "time": "08:09:29",
+      "time": "12:43:47",
       "step": "4 Evaluate",
       "actor": "Document Tool",
       "detail": "BrightPath Tech: 2 pages, 2,607 chars via PyMuPDF"
     },
     {
-      "time": "08:09:29",
+      "time": "12:43:47",
       "step": "4 Evaluate",
       "actor": "Document Tool",
       "detail": "NexaWorks: 2 pages, 4,553 chars via PyMuPDF"
     },
     {
-      "time": "08:09:29",
+      "time": "12:43:47",
       "step": "4 Evaluate",
       "actor": "Document Tool",
       "detail": "Orbit Digital: 2 pages, 3,268 chars via PyMuPDF"
     },
     {
-      "time": "08:09:29",
+      "time": "12:43:47",
       "step": "4 Evaluate",
       "actor": "Evaluation Agent (OFFLINE_DEMO (keyword heuristic - no LLM))",
       "detail": "Apex Systems: 1 LLM call(s)"
     },
     {
-      "time": "08:09:29",
+      "time": "12:43:47",
       "step": "4 Evaluate",
       "actor": "Evaluation Agent (OFFLINE_DEMO (keyword heuristic - no LLM))",
       "detail": "BrightPath Tech: 1 LLM call(s)"
     },
     {
-      "time": "08:09:29",
+      "time": "12:43:47",
       "step": "4 Evaluate",
       "actor": "Evaluation Agent (OFFLINE_DEMO (keyword heuristic - no LLM))",
       "detail": "NexaWorks: 1 LLM call(s)"
     },
     {
-      "time": "08:09:29",
+      "time": "12:43:47",
       "step": "4 Evaluate",
       "actor": "Evaluation Agent (OFFLINE_DEMO (keyword heuristic - no LLM))",
       "detail": "Orbit Digital: 1 LLM call(s)"
     },
     {
-      "time": "08:09:29",
+      "time": "12:43:47",
       "step": "5 Validate",
       "actor": "Validation Tool",
       "detail": "Apex Systems: 0 warning(s); evidence verified for 5/5 criteria"
     },
     {
-      "time": "08:09:29",
+      "time": "12:43:47",
       "step": "5 Validate",
       "actor": "Validation Tool",
       "detail": "BrightPath Tech: 0 warning(s); evidence verified for 5/5 criteria"
     },
     {
-      "time": "08:09:29",
+      "time": "12:43:47",
       "step": "5 Validate",
       "actor": "Validation Tool",
       "detail": "NexaWorks: 0 warning(s); evidence verified for 5/5 criteria"
     },
     {
-      "time": "08:09:29",
+      "time": "12:43:47",
       "step": "5 Validate",
       "actor": "Validation Tool",
       "detail": "Orbit Digital: 0 warning(s); evidence verified for 5/5 criteria"
     },
     {
-      "time": "08:09:29",
+      "time": "12:43:47",
       "step": "6 Score",
       "actor": "Ranking Tool",
       "detail": "Absolute weighted scores calculated for every supplier"
     },
     {
-      "time": "08:09:29",
+      "time": "12:43:47",
       "step": "7 Benchmark",
       "actor": "Ranking Tool",
       "detail": "Benchmarks: Technical Capability=10 (Apex Systems); Implementation Plan=8 (NexaWorks); Commercial Value=8 (Apex Systems); Security & Compliance=8 (Apex Systems, NexaWorks); Support & Experience=7 (Orbit Digital)"
     },
     {
-      "time": "08:09:29",
+      "time": "12:43:47",
       "step": "8 Rank",
       "actor": "Ranking Tool",
       "detail": "#1 Apex Systems (PPI 96.07) > #2 NexaWorks (PPI 79.64) > #3 Orbit Digital (PPI 51.00) > #4 BrightPath Tech (PPI 47.71)"
     },
     {
-      "time": "08:09:29",
+      "time": "12:43:47",
       "step": "9 Persist",
       "actor": "Orchestrator -> SQLite",
-      "detail": "Saved 4 supplier result(s) under RFP-20261025-080928-D6A774"
+      "detail": "Saved 4 supplier result(s) under RFP-20261025-124347-AE9897"
     }
   ]
 }

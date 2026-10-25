@@ -56,7 +56,7 @@ flowchart LR
 
 1. **Setup**: Streamlit starts; the database is created and seeded if needed; active criteria are shown.
 2. **Input**: upload supplier PDFs (or click *Load the 4 sample supplier PDFs*) and enter name, submission date and experience rating (1-5).
-3. **Batch**: a unique `RFP_RUN_ID` (e.g. `RFP-20261025-080855-F74480`) and a `RUNNING` row are created.
+3. **Batch**: a unique `RFP_RUN_ID` (e.g. `RFP-20261025-080855-F74480`) is generated, with a `RUNNING` run row and one `PENDING` supplier entry per uploaded document.
 4. **Evaluate**: criteria are **reloaded from SQLite at run time**, text is extracted, the prompt is built and the LLM is called (suppliers in parallel, results re-ordered deterministically).
 5. **Validate**: JSON is parsed and every criterion normalised; warnings are recorded.
 6. **Score**: absolute weighted score per supplier.
@@ -106,6 +106,7 @@ Benchmarks are Technical = 8 (A) and Commercial = 10 (B). A ranks first. This ex
 | Wrong `max_score` | Database value used |
 | Evidence quote not found in the PDF | Flagged ⚠ *not verified*, with a warning (catches invented quotes) |
 | Missing justification | "Not provided" and a warning |
+| Two suppliers upload the identical PDF | Evaluated once, scorecard shared, duplicate-submission warning |
 
 **Supplier metadata checks** (these block the run): name required and unique; submission date valid and not in the
 future; experience rating between 1 and 5. **Criteria checks** (these also block the run): active weights must total 100%, names unique, max score > 0.
@@ -117,9 +118,9 @@ future; experience rating between 1 and 5. **Criteria checks** (these also block
 |---|---|
 | `evaluation_criteria` | criterion_id, name, description, weight, max_score, is_active, updated_at |
 | `rfp_runs` | rfp_run_id, created_at, status (RUNNING/COMPLETED/FAILED), rfp_title, evaluation_mode, criteria_snapshot, warnings_json, run_json |
-| `supplier_results` | rfp_run_id, supplier_name, submission_date, experience_rating, absolute_score, ppi, final_rank, result_json |
+| `supplier_results` | rfp_run_id, supplier_name, submission_date, experience_rating, absolute_score, ppi, final_rank, status (PENDING → RANKED / NOT_EVALUATED), result_json |
 | `criterion_scores` | one row per supplier × criterion: score, benchmark, gap, relative %, weighted points, justification, evidence, evidence_verified *(audit trail)* |
-| `llm_cache` | hash of (prompt version, model, supplier, document SHA-256, criteria) → validated-parse LLM reply *(reproducibility, cost control)* |
+| `llm_cache` | hash of (prompt version, model, document SHA-256, criteria) → LLM reply *(reproducibility, cost control: the same document always gets the same scorecard)* |
 
 Criteria are edited in the **Criteria** tab without code changes. Deleted criteria are deactivated rather than
 removed, so past runs stay auditable, and each run stores a snapshot of the criteria it used.
@@ -167,8 +168,8 @@ streamlit run app.py
 - **Offline demo mode** (sidebar) runs the full workflow without a key, using a transparent keyword heuristic
   in place of the LLM. It is clearly labelled and meant only for demos and automated tests.
 
-Run the tests: `pytest` (24 tests: formulas, tie-breaks, zero benchmark, validation and repair, evidence checking,
-LLM retry and cache with a fake client, end-to-end workflow, bad files).
+Run the tests: `pytest` (26 tests: formulas, tie-breaks, zero benchmark, validation and repair, evidence checking,
+LLM retry and cache with a fake client, end-to-end workflow, bad files, duplicate documents, batch statuses).
 
 ## 9. Deploying on Streamlit Community Cloud
 
@@ -191,6 +192,9 @@ demo; production would use a managed database (e.g. Postgres) with the same sche
 6. **Validation case**: in *Testing tools*, type `BrightPath Tech` in the simulate box and click *Load bad files*, then re-run. Show
    the clipped (14 → 10), non-numeric, missing and invented-evidence warnings, plus the scanned and corrupt PDFs skipped
    with reasons. The run still completes for the valid suppliers.
+7. **Tie-break case**: in *Testing tools*, click *Add tie-break test file*. This adds an identical copy of the NexaWorks
+   proposal as "NexaWorks Twin" with the same submission date and a lower experience rating. Re-run it: both get the same PPI,
+   and the tie-break table shows rule *3. Higher experience rating* deciding the order, plus a duplicate-submission warning.
 
 ## 11. Assumptions
 
@@ -236,6 +240,7 @@ rfp-evaluator/
 | ![Criteria](docs/screenshots/01_criteria.png) | ![Supplier input](docs/screenshots/02_supplier_input.png) |
 | ![Leaderboard](docs/screenshots/03_leaderboard.png) | ![Scorecard](docs/screenshots/04_scorecard.png) |
 | ![Run details](docs/screenshots/05_run_details.png) | ![Validation case](docs/screenshots/06_validation_case.png) |
+| ![Tie-break case](docs/screenshots/07_tie_break.png) | |
 
 ## 14. Possible extensions
 

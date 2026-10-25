@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS supplier_results (
     absolute_score     REAL,
     ppi                REAL,
     final_rank         INTEGER,
+    status             TEXT NOT NULL DEFAULT 'PENDING',   -- PENDING / RANKED / NOT_EVALUATED
     result_json        TEXT NOT NULL,
     UNIQUE (rfp_run_id, supplier_name)
 );
@@ -136,6 +137,9 @@ def init_db(db_path: Path | str | None = None, seed: bool = True) -> None:
     """Create tables (idempotent) and seed default criteria if empty."""
     with connect(db_path) as conn:
         conn.executescript(SCHEMA)
+        cols = {r[1] for r in conn.execute("PRAGMA table_info(supplier_results)")}
+        if "status" not in cols:  # upgrade databases created by an earlier version
+            conn.execute("ALTER TABLE supplier_results ADD COLUMN status TEXT NOT NULL DEFAULT 'PENDING'")
         count = conn.execute("SELECT COUNT(*) FROM evaluation_criteria").fetchone()[0]
         if seed and count == 0:
             now = utc_now()
@@ -220,13 +224,22 @@ def save_criteria(criteria: list[dict], db_path=None) -> None:
 # --- Runs and results -------------------------------------------------------------
 
 
-def create_run(rfp_run_id: str, rfp_title: str, mode: str, criteria: list[dict], db_path=None) -> None:
+def create_run(rfp_run_id: str, rfp_title: str, mode: str, criteria: list[dict],
+               suppliers: list[dict] | None = None, db_path=None) -> None:
+    """Create the batch: one rfp_runs row plus a PENDING supplier entry per uploaded document."""
     with connect(db_path) as conn:
         conn.execute(
             "INSERT INTO rfp_runs (rfp_run_id, created_at, status, rfp_title, evaluation_mode, criteria_snapshot)"
             " VALUES (?, ?, 'RUNNING', ?, ?, ?)",
             (rfp_run_id, utc_now(), rfp_title, mode, json.dumps(criteria)),
         )
+        for s in suppliers or []:
+            conn.execute(
+                "INSERT INTO supplier_results (rfp_run_id, supplier_name, submission_date, experience_rating,"
+                " status, result_json) VALUES (?, ?, ?, ?, 'PENDING', ?)",
+                (rfp_run_id, s["supplier_name"], str(s["submission_date"]), float(s["experience_rating"]),
+                 json.dumps({"source_file": s.get("filename")})),
+            )
 
 
 def fail_run(rfp_run_id: str, warnings: list[str], db_path=None) -> None:
@@ -241,12 +254,19 @@ def save_run_results(run: dict, db_path=None) -> None:
     """Write the complete result of a run in a single transaction."""
     run_id = run["rfp_run_id"]
     with connect(db_path) as conn:
-        conn.execute("DELETE FROM supplier_results WHERE rfp_run_id=?", (run_id,))
         conn.execute("DELETE FROM criterion_scores WHERE rfp_run_id=?", (run_id,))
+        for n in run.get("not_evaluated", []):
+            conn.execute(
+                "UPDATE supplier_results SET status='NOT_EVALUATED', result_json=? WHERE rfp_run_id=? AND supplier_name=?",
+                (json.dumps(n), run_id, n["supplier_name"]),
+            )
         for s in run["suppliers"]:
             conn.execute(
                 "INSERT INTO supplier_results (rfp_run_id, supplier_name, submission_date, experience_rating,"
-                " absolute_score, ppi, final_rank, result_json) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                " absolute_score, ppi, final_rank, status, result_json) VALUES (?, ?, ?, ?, ?, ?, ?, 'RANKED', ?)"
+                " ON CONFLICT(rfp_run_id, supplier_name) DO UPDATE SET submission_date=excluded.submission_date,"
+                " experience_rating=excluded.experience_rating, absolute_score=excluded.absolute_score,"
+                " ppi=excluded.ppi, final_rank=excluded.final_rank, status='RANKED', result_json=excluded.result_json",
                 (
                     run_id,
                     s["supplier_name"],
@@ -290,7 +310,7 @@ def list_runs(db_path=None, limit: int = 50) -> list[dict]:
     with connect(db_path) as conn:
         rows = conn.execute(
             "SELECT r.rfp_run_id, r.created_at, r.status, r.rfp_title, r.evaluation_mode,"
-            " (SELECT COUNT(*) FROM supplier_results s WHERE s.rfp_run_id = r.rfp_run_id) AS suppliers"
+            " (SELECT COUNT(*) FROM supplier_results s WHERE s.rfp_run_id = r.rfp_run_id AND s.status = 'RANKED') AS suppliers"
             " FROM rfp_runs r ORDER BY r.created_at DESC LIMIT ?",
             (limit,),
         ).fetchall()

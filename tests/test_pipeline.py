@@ -78,3 +78,27 @@ def test_simulated_malformed_llm_output_is_normalised(tmp_db):
     bp = next(s for s in result["suppliers"] if s["supplier_name"] == "BrightPath Tech")
     assert len(bp["validation_warnings"]) >= 4
     assert all(0 <= c["score"] <= c["max_score"] for c in bp["criteria"])
+
+
+def test_identical_document_ties_and_is_broken_by_rule_3(tmp_db):
+    rows = inputs()
+    nexa = next(r for r in rows if r["supplier_name"] == "NexaWorks")
+    rows.append({**nexa, "supplier_name": "NexaWorks Twin", "experience_rating": 3,
+                 "filename": "NexaWorks_Twin_Copy.pdf"})
+    result = run_evaluation(rows, OfflineDemoEvaluator(), db_path=tmp_db)["result"]
+    order = [s["supplier_name"] for s in result["suppliers"]]
+    a, b = (next(s for s in result["suppliers"] if s["supplier_name"] == n) for n in ("NexaWorks", "NexaWorks Twin"))
+    assert a["ppi"] == b["ppi"] and order.index("NexaWorks") + 1 == order.index("NexaWorks Twin")
+    tb = next(t for t in result["tie_breaks"] if t["lower"] == "NexaWorks Twin")
+    assert tb["deciding_rule"] == "3. Higher experience rating"
+    assert any("identical to NexaWorks" in w for w in result["warnings"])
+
+
+def test_supplier_entries_created_at_batch_and_statuses_recorded(tmp_db):
+    result = run_evaluation(inputs(["Corrupt_File.pdf"]), OfflineDemoEvaluator(), db_path=tmp_db)["result"]
+    with db.connect(tmp_db) as conn:
+        rows = conn.execute("SELECT supplier_name, status, final_rank FROM supplier_results WHERE rfp_run_id=?",
+                            (result["rfp_run_id"],)).fetchall()
+    status = {r["supplier_name"]: r["status"] for r in rows}
+    assert status["Corrupt_File"] == "NOT_EVALUATED"
+    assert sum(v == "RANKED" for v in status.values()) == 4 and len(rows) == 5

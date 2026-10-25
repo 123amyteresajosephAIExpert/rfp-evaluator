@@ -109,11 +109,16 @@ def build_messages(supplier_name: str, document_text: str, criteria: list[dict])
     ]
 
 
-def cache_key(document_sha: str, criteria: list[dict], model: str, supplier_name: str) -> str:
+def cache_key(document_sha: str, criteria: list[dict], model: str) -> str:
+    """Identical document + identical criteria + same model -> identical scorecard.
+
+    The supplier name is deliberately NOT part of the key: the evaluation depends only on
+    the proposal content, so the same PDF can never receive two different scores.
+    """
     crit = json.dumps(
         [(c["criterion_id"], c["name"], c["description"], c["max_score"]) for c in criteria], sort_keys=True
     )
-    payload = f"{PROMPT_VERSION}|{model}|{supplier_name}|{document_sha}|{crit}"
+    payload = f"{PROMPT_VERSION}|{model}|{document_sha}|{crit}"
     return hashlib.sha256(payload.encode()).hexdigest()
 
 
@@ -157,7 +162,7 @@ class LLMEvaluator:
         return resp.choices[0].message.content or ""
 
     def evaluate(self, supplier_name: str, document_text: str, document_sha: str, criteria: list[dict]) -> EvaluationResponse:
-        key = cache_key(document_sha, criteria, self.label, supplier_name)
+        key = cache_key(document_sha, criteria, self.label)
         if self.use_cache:
             cached = db.cache_get(key, self.db_path)
             if cached:

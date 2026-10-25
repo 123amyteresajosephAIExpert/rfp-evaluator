@@ -83,6 +83,11 @@ with st.sidebar:
         st.caption("Demonstrate the validation layer by deliberately corrupting the evaluator's reply for "
                    "selected suppliers (out-of-range, non-numeric, missing and invented-evidence results).")
         fault_names = st.text_input("Simulate malformed LLM output for (comma-separated supplier names)", "")
+        if st.button("Add tie-break test file"):
+            src = SAMPLE_DIR / "NexaWorks_RFP_Response.pdf"
+            ss.extra_files["NexaWorks_Twin_Copy.pdf"] = src.read_bytes()
+            st.toast("Added an identical copy of the NexaWorks proposal as 'NexaWorks Twin' (same date, "
+                     "lower experience rating). Its PPI will tie with NexaWorks; rule 3 decides the order.")
         if st.button("Load bad files (scanned + corrupt PDF)"):
             for f in sorted(EDGE_DIR.glob("*.pdf")):
                 ss.extra_files[f.name] = f.read_bytes()
@@ -101,6 +106,8 @@ with st.sidebar:
 # Helpers
 # ------------------------------------------------------------------------------------
 def default_meta(filename: str) -> dict:
+    if filename == "NexaWorks_Twin_Copy.pdf":
+        return {"supplier_name": "NexaWorks Twin", "submission_date": date(2026, 10, 7), "experience_rating": 3.0}
     if filename in SAMPLE_META:
         m = SAMPLE_META[filename]
         return {"supplier_name": m["supplier_name"], "submission_date": date.fromisoformat(m["submission_date"]),
@@ -140,6 +147,12 @@ with tab_criteria:
     st.subheader("Evaluation criteria")
     st.caption("Stored in SQLite. Change weights, switch criteria on or off, or add new ones. The prompt is built "
                "from this table at run time, so no code changes are needed. Active weights must total 100%.")
+    active_now = db.get_criteria(active_only=True)
+    st.markdown("**Active criteria used by the next evaluation**")
+    st.dataframe(pd.DataFrame([{"Criterion": c["name"], "Weight %": c["weight"], "Max score": c["max_score"],
+                                "What the LLM inspects": c["description"]} for c in active_now]),
+                 hide_index=True, use_container_width=True)
+    st.markdown("**Edit criteria**")
     all_criteria = db.get_criteria(active_only=False)
     df = pd.DataFrame(all_criteria)
     df["is_active"] = df["is_active"].astype(bool)
