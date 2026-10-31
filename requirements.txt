@@ -6,4 +6,4 @@ pymupdf>=1.24
 pypdf>=5.0
 pandas>=2.2
 altair>=5.0
-reportlab>=4.0   # only needed to regenerate the sample supplier PDFs
+reportlab>=4.0

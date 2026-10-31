@@ -1,6 +1,10 @@
 {
-  "Apex_Systems_RFP_Response.pdf":     {"supplier_name": "Apex Systems",    "submission_date": "2026-10-06", "experience_rating": 4},
-  "BrightPath_Tech_RFP_Response.pdf":  {"supplier_name": "BrightPath Tech", "submission_date": "2026-10-03", "experience_rating": 2},
-  "NexaWorks_RFP_Response.pdf":        {"supplier_name": "NexaWorks",       "submission_date": "2026-10-07", "experience_rating": 4},
-  "Orbit_Digital_RFP_Response.pdf":    {"supplier_name": "Orbit Digital",   "submission_date": "2026-10-07", "experience_rating": 5}
+  "Apex_Systems_RFP_Response.pdf":          {"supplier_name": "Apex Systems",          "submission_date": "2026-10-06", "experience_rating": 4},
+  "BrightPath_Tech_RFP_Response.pdf":       {"supplier_name": "BrightPath Tech",       "submission_date": "2026-10-03", "experience_rating": 2},
+  "NexaWorks_RFP_Response.pdf":             {"supplier_name": "NexaWorks",             "submission_date": "2026-10-07", "experience_rating": 4},
+  "Orbit_Digital_RFP_Response.pdf":         {"supplier_name": "Orbit Digital",         "submission_date": "2026-10-07", "experience_rating": 5},
+  "Vertex_Cloud_Partners_RFP_Response.pdf": {"supplier_name": "Vertex Cloud Partners", "submission_date": "2026-10-08", "experience_rating": 3},
+  "DriveLine_Leasing_Quote.pdf":            {"supplier_name": "DriveLine Leasing",     "submission_date": "2026-10-12", "experience_rating": 3},
+  "GreenMiles_Fleet_Quote.pdf":             {"supplier_name": "GreenMiles Fleet",      "submission_date": "2026-10-10", "experience_rating": 4},
+  "AutoServe_Rentals_Quote.pdf":            {"supplier_name": "AutoServe Rentals",     "submission_date": "2026-10-10", "experience_rating": 5}
 }

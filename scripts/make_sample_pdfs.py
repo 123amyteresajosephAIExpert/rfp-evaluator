@@ -25,7 +25,9 @@ from reportlab.platypus import (ListFlowable, ListItem, Paragraph, SimpleDocTemp
                                 TableStyle)
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT = ROOT / "sample_data" / "supplier_pdfs"
+OUT = ROOT / "sample_data" / "proposals" / "hr_platform"
+FLEET_OUT = ROOT / "sample_data" / "proposals" / "fleet_lease"
+TEMPLATES = ROOT / "sample_data" / "templates"
 EDGE = ROOT / "sample_data" / "edge_cases"
 
 RFP_REF = "RFP No. KML/HR/2026/014 - HR Service Delivery Platform"
@@ -60,14 +62,16 @@ def table(rows, widths, header=True):
     return t
 
 
-def build(filename: str, supplier: str, date: str, sections: list):
-    OUT.mkdir(parents=True, exist_ok=True)
-    doc = SimpleDocTemplate(str(OUT / filename), pagesize=A4, leftMargin=18 * mm, rightMargin=18 * mm,
+def build(filename: str, supplier: str, date: str, sections: list, out_dir: Path = OUT,
+          rfp_ref: str = RFP_REF, buyer: str = BUYER, heading: str | None = None):
+    out_dir.mkdir(parents=True, exist_ok=True)
+    doc = SimpleDocTemplate(str(out_dir / filename), pagesize=A4, leftMargin=18 * mm, rightMargin=18 * mm,
                             topMargin=16 * mm, bottomMargin=16 * mm, title=f"{supplier} - RFP Response",
                             author=supplier)
     story = [
-        Paragraph(f"{supplier}: Response to {RFP_REF}", H1),
-        Paragraph(f"Submitted to {BUYER} | Submission date: {date} | Fictional proposal for classroom use", SUB),
+        Paragraph(heading or f"{supplier}: Response to {rfp_ref}", H1),
+        Paragraph(f"Submitted to {buyer} | Submission date: {date} | Fictional document for classroom use", SUB)
+        if date else Paragraph(f"Issued by {buyer} | Fictional document for classroom use", SUB),
     ]
     for heading, blocks in sections:
         story.append(Paragraph(heading, H2))
@@ -82,7 +86,7 @@ def build(filename: str, supplier: str, date: str, sections: list):
         canvas.saveState()
         canvas.setFont("Helvetica", 7.5)
         canvas.setFillColor(colors.grey)
-        canvas.drawString(18 * mm, 9 * mm, f"{supplier} | {RFP_REF} | Confidential (fictional)")
+        canvas.drawString(18 * mm, 9 * mm, f"{supplier} | {rfp_ref} | Fictional - classroom use only")
         canvas.drawRightString(A4[0] - 18 * mm, 9 * mm, f"Page {d.page}")
         canvas.restoreState()
 
@@ -384,7 +388,218 @@ def edge_cases():
     (EDGE / "Corrupt_File.pdf").write_text("This is not really a PDF document.")
 
 
+# =============================================================================================
+# CLIENT RFP TEMPLATES (uploaded first; the app drafts criteria from them)
+# =============================================================================================
+def kestrel_template():
+    build("Kestrel_HR_Service_Delivery_RFP.pdf", "Kestrel Manufacturing", "", [
+        ("RFP at a glance", [
+            "RFP title: HR Service Delivery Platform (RFP No. KML/HR/2026/014)",
+            "Issued by: Kestrel Manufacturing Ltd (fictional)",
+            "Industry: Manufacturing - enterprise HR technology (SaaS)",
+            "Summary: Kestrel wants one cloud platform where its 6,500 employees can find HR answers and raise "
+            "HR requests, and where HR can manage cases against service levels, integrated with SAP "
+            "SuccessFactors and Microsoft Entra ID.",
+            "Response deadline: 10 October 2026, 17:00 IST. Responses must be PDF, at most 10 pages.",
+        ]),
+        ("1. Background", [
+            "Kestrel Manufacturing employs about 6,500 people across four plants (Pune, Chennai, Hosur, Sanand) and "
+            "a head office in Bengaluru. Around 70% are shift-based frontline employees without corporate laptops. "
+            "HR queries today arrive through email, walk-ins and phone calls, with no tracking or service levels.",
+        ]),
+        ("2. Key requirements", [
+            "R1. Employee self-service portal usable on mobile, kiosk and desktop, in English and at least two Indian languages.",
+            "R2. HR case management with categories, SLA timers, escalation and confidential case handling.",
+            "R3. Policy knowledge base with search and article analytics.",
+            "R4. Integration with SAP SuccessFactors (employee master data) and Microsoft Entra ID (single sign-on).",
+            "R5. India data residency and compliance with the Digital Personal Data Protection Act 2023.",
+            "R6. Go-live across all sites within about 20 weeks of contract signature.",
+            "R7. Transparent three-year total cost of ownership.",
+        ]),
+        ("3. Required response format", [
+            "Suppliers must answer in these sections: (1) Executive summary; (2) Understanding of the requirement; "
+            "(3) Proposed solution and architecture; (4) Implementation approach, timeline, team and milestones; "
+            "(5) Commercial proposal with a price table and assumptions; (6) Security, compliance and risk "
+            "controls; (7) Support model, relevant experience and references.",
+        ]),
+        ("4. Evaluation criteria and weights", [
+            "Each criterion is scored 0-10. Weighted scores determine the ranking; ties are broken by earlier "
+            "submission date, then historical experience rating, then supplier name.",
+            "C1. Technical Capability (30%): architecture, integrations, scalability and technical fit to R1-R4.",
+            "Best practice: cloud-native platform with certified SuccessFactors connector, open APIs, SSO/SCIM, "
+            "99.9%+ availability and load testing well above 6,500 users.",
+            "C2. Implementation Plan (20%): timeline, milestones, staffing, governance and risk plan.",
+            "Best practice: phased plan with dated milestones and exit criteria, named team, a pilot site, a RAID "
+            "log and hypercare, completed within 12-20 weeks.",
+            "C3. Commercial Value (20%): pricing clarity, three-year total cost, assumptions and exclusions.",
+            "Best practice: fixed or milestone-linked implementation fees, price locks and every assumption stated, "
+            "with no open-ended estimates.",
+            "C4. Security and Compliance (20%): controls, certifications, privacy and auditability.",
+            "Best practice: current ISO 27001 and SOC 2 Type II, encryption, India hosting, DPDP processes, MFA, "
+            "audit logs and independent penetration testing.",
+            "C5. Support and Experience (10%): support model, similar projects and references.",
+            "Best practice: 24x7 priority-1 support with service credits, a customer success manager and several "
+            "referenceable implementations of similar size.",
+        ]),
+        ("5. Commercial and legal notes", [
+            "Prices in INR excluding GST. Kestrel may shortlist suppliers for demonstrations. This RFP is "
+            "fictional and created for a classroom exercise.",
+        ]),
+    ], out_dir=TEMPLATES, heading="Request for Proposal: HR Service Delivery Platform")
+
+
+FLEET_REF = "RFQ No. MHC/ADM/2026/022 - Corporate Fleet Lease"
+FLEET_BUYER = "Meridian Healthcare Pvt Ltd (fictional)"
+
+
+def fleet_template():
+    build("Meridian_Fleet_Lease_RFQ.pdf", "Meridian Healthcare", "", [
+        ("RFQ at a glance", [
+            "RFP title: Corporate Fleet Lease - 40 vehicles for 48 months (RFQ No. MHC/ADM/2026/022)",
+            "Issued by: Meridian Healthcare Pvt Ltd (fictional)",
+            "Industry: Healthcare - corporate vehicle leasing",
+            "Summary: Meridian needs 30 compact sedans for its field medical representatives and 10 light utility "
+            "vans for sample logistics, on a 48-month operating lease with maintenance, across Bengaluru, Chennai "
+            "and Hyderabad.",
+        ]),
+        ("1. Key requirements", [
+            "R1. 30 compact sedans and 10 light utility vans, delivered within 8 weeks of the purchase order.",
+            "R2. Full-maintenance operating lease for 48 months, 20,000 km per vehicle per year.",
+            "R3. Service and breakdown support in Bengaluru, Chennai and Hyderabad, including replacement vehicles.",
+            "R4. Vehicles with at least a 4-star Global NCAP or Bharat NCAP safety rating.",
+            "R5. At least 25% of the fleet electric or CNG, with charging or fuelling support.",
+        ]),
+        ("2. Evaluation criteria and weights", [
+            "C1. Total Cost of Lease (35%): monthly rental, total 48-month cost, excess-km charges and exit terms.",
+            "Best practice: all-inclusive monthly rental with insurance and maintenance, clear excess-km rates and "
+            "no hidden end-of-lease charges.",
+            "C2. Vehicle Specification and Safety (25%): models offered, safety ratings, features and fit to R1/R4.",
+            "Best practice: 5-star rated models with six airbags, ESC and telematics for driver safety.",
+            "C3. Maintenance and Service Network (20%): workshops, response times, replacement vehicles and uptime.",
+            "Best practice: own or partner workshops in every city, 4-hour breakdown response and a guaranteed "
+            "replacement vehicle within 24 hours.",
+            "C4. Delivery Timeline (10%): ability to deliver all 40 vehicles within 8 weeks.",
+            "Best practice: phased delivery plan with dates, starting within 4 weeks.",
+            "C5. Sustainability (10%): EV/CNG share, charging support and emissions reporting.",
+            "Best practice: 30%+ EV share, workplace charging installation and quarterly emissions reports.",
+        ]),
+    ], out_dir=TEMPLATES, rfp_ref=FLEET_REF, buyer=FLEET_BUYER,
+        heading="Request for Quotation: Corporate Fleet Lease")
+
+
+# =============================================================================================
+# 5th HR supplier - polished claims, thin evidence, aggressive timeline
+# =============================================================================================
+def vertex():
+    build("Vertex_Cloud_Partners_RFP_Response.pdf", "Vertex Cloud Partners", "2026-10-08", [
+        ("1. Executive Summary", [
+            "Vertex Cloud Partners is a leading, award-winning digital transformation partner. Our world-class "
+            "<b>VertexHR 360</b> platform delivers best-in-class employee experiences powered by next-generation AI.",
+            "We are confident we can transform Kestrel's HR operations in just <b>12 weeks</b>.",
+        ]),
+        ("2. Understanding of the Requirement", [
+            "Kestrel wants to modernise HR service delivery for its employees with a portal, case management and "
+            "integrations.",
+        ]),
+        ("3. Proposed Solution", [
+            "VertexHR 360 is an AI-first platform with a smart portal, intelligent case routing, generative AI "
+            "answers and seamless integration with all leading HR systems including SuccessFactors. Single sign-on "
+            "is supported. The platform is highly scalable and enterprise ready.",
+        ]),
+        ("4. Implementation Plan", [
+            "Using our accelerated AgileX methodology we will deliver in 12 weeks: weeks 1-4 setup, weeks 5-10 "
+            "build and test, weeks 11-12 go-live. An experienced team will be assigned.",
+        ]),
+        ("5. Commercial Proposal", [
+            table([
+                ["Item", "Amount (INR)"],
+                ["Platform subscription (per employee per month)", "190"],
+                ["Implementation (indicative)", "To be confirmed after workshops"],
+                ["AI add-on module", "Optional - priced separately"],
+            ], [110, 60]),
+            "Indicative three-year subscription for 6,500 employees is about INR 4.45 crore. Final pricing will "
+            "depend on scope confirmed during workshops. Prices exclude GST.",
+        ]),
+        ("6. Security and Compliance", [
+            "Vertex follows enterprise-grade security standards. ISO 27001 certified. Data is encrypted and can be "
+            "hosted in India on request. Vertex is committed to DPDP compliance.",
+        ]),
+        ("7. Support and Experience", [
+            "24x7 support is available through our global support centre. Vertex has served more than 50 global "
+            "brands across industries. References can be provided at a later stage.",
+        ]),
+    ])
+
+
+# =============================================================================================
+# FLEET LEASE QUOTES (second domain - shows the app is not tied to one RFP)
+# =============================================================================================
+def fleet_quotes():
+    common = dict(out_dir=FLEET_OUT, rfp_ref=FLEET_REF, buyer=FLEET_BUYER)
+    build("DriveLine_Leasing_Quote.pdf", "DriveLine Leasing", "2026-10-12", [
+        ("1. Summary", ["DriveLine Leasing offers the lowest-cost operating lease for Meridian's 40 vehicles, "
+                        "with delivery of all vehicles in <b>6 weeks</b>."]),
+        ("2. Vehicles offered", [table([
+            ["Segment", "Model", "Qty", "Safety rating", "Fuel"],
+            ["Compact sedan", "Fictional Aria 1.2", "30", "3-star Global NCAP", "Petrol"],
+            ["Utility van", "Fictional Cargo LX", "10", "Not rated", "Diesel"],
+        ], [30, 40, 12, 44, 30]), "No electric or CNG vehicles are offered in this quote."]),
+        ("3. Pricing (48 months, 20,000 km/year)", [table([
+            ["Item", "Monthly per vehicle (INR)", "Fleet total 48 months (INR)"],
+            ["Compact sedan", "21,500", "3,09,60,000"],
+            ["Utility van", "24,000", "1,15,20,000"],
+            ["<b>Total</b>", "", "<b>4,24,80,000</b>"],
+        ], [50, 55, 65]), "Includes insurance and scheduled maintenance. Excess km charged at INR 6/km. "
+                           "Early termination: 6 months' rental."]),
+        ("4. Service network", ["Service through partner workshops in Bengaluru. Chennai and Hyderabad are covered "
+                                "by roadside assistance only. Replacement vehicle provided after 72 hours."]),
+    ], **common)
+    build("GreenMiles_Fleet_Quote.pdf", "GreenMiles Fleet", "2026-10-10", [
+        ("1. Summary", ["GreenMiles Fleet proposes a low-emission fleet with <b>40% electric</b> vehicles, "
+                        "workplace charging and quarterly emissions reporting."]),
+        ("2. Vehicles offered", [table([
+            ["Segment", "Model", "Qty", "Safety rating", "Fuel"],
+            ["Compact sedan", "Fictional Volta EV", "16", "5-star Bharat NCAP", "Electric"],
+            ["Compact sedan", "Fictional Aria 1.2 CNG", "14", "4-star Global NCAP", "CNG"],
+            ["Utility van", "Fictional eCargo", "10", "4-star Bharat NCAP", "Electric"],
+        ], [30, 40, 12, 44, 30]), "All vehicles have six airbags, ESC and telematics."]),
+        ("3. Pricing (48 months, 20,000 km/year)", [table([
+            ["Item", "Monthly per vehicle (INR)", "Fleet total 48 months (INR)"],
+            ["EV sedan", "31,000", "2,38,08,000"],
+            ["CNG sedan", "24,500", "1,64,64,000"],
+            ["EV van", "33,000", "1,58,40,000"],
+            ["<b>Total</b>", "", "<b>5,61,12,000</b>"],
+        ], [50, 55, 65]), "All-inclusive of insurance, maintenance, charging installation at 3 offices. Excess km "
+                           "INR 4/km. No end-of-lease charges."]),
+        ("4. Service and delivery", ["Own service centres in Bengaluru and Chennai; partner workshop in Hyderabad. "
+                                     "4-hour breakdown response, replacement vehicle within 24 hours. Delivery in "
+                                     "two phases: 20 vehicles in week 5, 20 vehicles in week 9."]),
+    ], **common)
+    build("AutoServe_Rentals_Quote.pdf", "AutoServe Rentals", "2026-10-10", [
+        ("1. Summary", ["AutoServe Rentals operates <b>its own workshops in all three cities</b> and guarantees "
+                        "98% fleet uptime with replacement vehicles within 12 hours."]),
+        ("2. Vehicles offered", [table([
+            ["Segment", "Model", "Qty", "Safety rating", "Fuel"],
+            ["Compact sedan", "Fictional Aria 1.2", "20", "4-star Global NCAP", "Petrol"],
+            ["Compact sedan", "Fictional Aria 1.2 CNG", "10", "4-star Global NCAP", "CNG"],
+            ["Utility van", "Fictional Cargo LX CNG", "10", "Not rated", "CNG"],
+        ], [30, 40, 12, 44, 30])]),
+        ("3. Pricing (48 months, 20,000 km/year)", [table([
+            ["Item", "Monthly per vehicle (INR)", "Fleet total 48 months (INR)"],
+            ["Petrol sedan", "23,800", "2,28,48,000"],
+            ["CNG sedan", "24,900", "1,19,52,000"],
+            ["CNG van", "27,500", "1,32,00,000"],
+            ["<b>Total</b>", "", "<b>4,80,00,000</b>"],
+        ], [50, 55, 65]), "Includes insurance, maintenance, tyres and a 24x7 helpdesk. Excess km INR 5/km."]),
+        ("4. Service network and delivery", ["Own workshops in Bengaluru, Chennai and Hyderabad. 2-hour breakdown "
+                                             "response in city limits. Delivery of all vehicles in <b>12 weeks</b> "
+                                             "due to current model waiting periods."]),
+    ], **common)
+
+
 if __name__ == "__main__":
-    apex(); brightpath(); nexaworks(); orbit(); edge_cases()
-    for p in sorted(OUT.glob("*.pdf")) + sorted(EDGE.glob("*.pdf")):
+    kestrel_template(); fleet_template()
+    apex(); brightpath(); nexaworks(); orbit(); vertex()
+    fleet_quotes(); edge_cases()
+    for p in sorted((ROOT / "sample_data").rglob("*.pdf")):
         print(p.relative_to(ROOT))

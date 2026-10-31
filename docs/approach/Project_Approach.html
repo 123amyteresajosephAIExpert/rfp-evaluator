@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Project Approach - AI Procurement Evaluator</title>
+<style>
+  @page { size: A4; margin: 16mm 15mm 16mm 15mm; }
+  :root { --navy:#1f3a5f; --blue:#2a6fdb; --ink:#1d2733; --muted:#5b6676; --line:#d7dee8; --soft:#f3f7fd; --orange:#e8743b; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; color: var(--ink); font-size: 10.2pt; line-height: 1.45; margin: 0; }
+  h1 { font-size: 22pt; color: var(--navy); margin: 0 0 2px 0; letter-spacing: -0.3px; }
+  h2 { font-size: 13.5pt; color: var(--navy); margin: 18px 0 6px 0; padding-bottom: 3px; border-bottom: 2px solid var(--blue); }
+  h3 { font-size: 11pt; color: var(--navy); margin: 10px 0 4px 0; }
+  p { margin: 4px 0 6px 0; }
+  ul { margin: 3px 0 6px 0; padding-left: 18px; }
+  li { margin: 2px 0; }
+  .sub { color: var(--muted); font-size: 10pt; margin-bottom: 10px; }
+  .cover { background: linear-gradient(120deg, #1f3a5f, #2a6fdb); color: #fff; border-radius: 10px; padding: 18px 20px; margin-bottom: 12px; }
+  .cover h1 { color: #fff; }
+  .cover .sub { color: #dfe8fb; margin: 0; }
+  .meta { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 10px 0 4px 0; }
+  .meta div { background: rgba(255,255,255,0.12); border-radius: 6px; padding: 6px 8px; font-size: 8.8pt; color: #fff; }
+  .meta b { display: block; font-size: 7.6pt; text-transform: uppercase; letter-spacing: 0.5px; color: #cfe0ff; }
+  table { width: 100%; border-collapse: collapse; margin: 6px 0 8px 0; font-size: 9pt; }
+  th { background: var(--navy); color: #fff; text-align: left; padding: 5px 7px; font-weight: 600; }
+  td { border-bottom: 1px solid var(--line); padding: 4px 7px; vertical-align: top; }
+  tr:nth-child(even) td { background: #f8fafd; }
+  .principle { border-left: 4px solid var(--blue); background: var(--soft); padding: 8px 12px; border-radius: 5px; margin: 8px 0; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin: 8px 0; }
+  .step { border: 1px solid var(--line); border-radius: 7px; padding: 6px 7px; background: #fbfcfe; font-size: 8.4pt; min-height: 70px; }
+  .step b { display: block; color: var(--navy); font-size: 8.8pt; margin-bottom: 2px; }
+  .step .n { display: inline-block; background: var(--blue); color: #fff; border-radius: 50%; width: 17px; height: 17px; text-align: center; line-height: 17px; font-size: 8pt; margin-right: 4px; }
+  .step.ai { border-color: #f0b893; background: #fff6f0; }
+  .step.ai .n { background: var(--orange); }
+  .legend { font-size: 8.4pt; color: var(--muted); }
+  .tag { display: inline-block; font-size: 7.8pt; padding: 1px 6px; border-radius: 9px; background: #eef3fb; border: 1px solid #c9d6ea; color: var(--navy); margin-right: 3px; }
+  .tag.ai { background: #fff1e8; border-color: #f0b893; color: #8a4512; }
+  .shot { width: 100%; border: 1px solid var(--line); border-radius: 6px; }
+  .cap { font-size: 8.2pt; color: var(--muted); margin-top: 2px; }
+  h2, h3 { break-after: avoid; }
+  tr, .two, .flow, .kpi, .principle, img, .keep { break-inside: avoid; }
+  thead { display: table-header-group; }
+  .kpi { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 6px 0; }
+  .kpi div { border: 1px solid var(--line); border-radius: 7px; padding: 7px 9px; background: #fbfcfe; }
+  .kpi b { display: block; font-size: 15pt; color: var(--navy); }
+  .kpi span { font-size: 8.4pt; color: var(--muted); }
+  code { font-family: Consolas, "Courier New", monospace; font-size: 8.8pt; background: #f2f4f8; padding: 0 3px; border-radius: 3px; }
+  .note { font-size: 8.6pt; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <h1>AI Procurement Evaluator</h1>
+  <p class="sub">Agentic RFP Evaluation and Supplier Ranking · How I approached and built the mini project</p>
+  <div class="meta">
+    <div><b>Student</b>Amy Teresa Joseph (AJ)</div>
+    <div><b>Programme</b>IIT Madras Pravartak · AI Agent Workflows · Cohort 3</div>
+    <div><b>Module</b>4 · Classroom mini project</div>
+    <div><b>Links</b>App: &lt;Streamlit URL&gt;<br>Code: &lt;GitHub URL&gt;</div>
+  </div>
+</div>
+
+<h2>1. The project in one page</h2>
+<div class="two">
+  <div>
+    <h3>The problem</h3>
+    <ul>
+      <li>A procurement team receives several supplier proposals for one RFP.</li>
+      <li>Reading and comparing them by hand is slow and inconsistent.</li>
+      <li>The team needs a fair, evidence-based and <b>explainable</b> ranking it can defend.</li>
+    </ul>
+    <h3>What I built</h3>
+    <ul>
+      <li>A multi-page Streamlit app with SQLite, orchestrated as a LangGraph agentic workflow.</li>
+      <li>It drafts evaluation criteria from <b>any</b> client RFP, scores each proposal with quoted evidence, and benchmarks suppliers against peers and industry best practice.</li>
+      <li>The result is a reproducible leaderboard with a full audit trail.</li>
+    </ul>
+  </div>
+  <div>
+    <div class="principle"><b>Core design principle: "AI reads, code decides."</b><br>
+      The LLM judges proposal <i>content</i>: scores, justifications and quotes. Deterministic Python does all
+      arithmetic, benchmarks, tie-breaks and ranks. Once the AI's answers are validated, the same inputs always give
+      the same ranking, and every number traces back to a criterion, a weight, a verified quote and a rule.</div>
+    <div class="kpi">
+      <div><b>7</b><span>app pages</span></div>
+      <div><b>8</b><span>agents and tools</span></div>
+      <div><b>37</b><span>automated tests</span></div>
+      <div><b>2</b><span>domains demoed</span></div>
+    </div>
+    <p class="note">Sample data: an HR service delivery platform RFP with 5 supplier proposals, and a corporate fleet
+      lease RFQ with 3 quotes, all fictional and created for this project.</p>
+  </div>
+</div>
+
+<h2>2. How I approached it</h2>
+<table>
+  <tr><th style="width:20%">Phase</th><th>What I did</th><th style="width:28%">Why</th></tr>
+  <tr><td><b>1 · Understand</b></td><td>Read the brief and the class discussion. Listed every requirement against the 100-mark rubric, plus the instructor's suggestions: template-first criteria, an editable prompt, peer and industry scoring, run history, DNA reuse, Q&amp;A, the API key entered in the UI, and a modular code layout.</td><td>To be clear on what "done" means before building.</td></tr>
+  <tr><td><b>2 · Design</b></td><td>Fixed the principle "AI reads, code decides". Split the work into single-purpose agents and tools. Designed the SQLite tables so nothing lives only in memory.</td><td>Auditability and repeatability matter most in procurement.</td></tr>
+  <tr><td><b>3 · Build the core</b></td><td>End-to-end flow first: PDF → AI scorecard → validation → scoring → ranking → database → leaderboard. Tested without AI using an offline evaluator.</td><td>As advised in class: solve the main use case first, then add richness.</td></tr>
+  <tr><td><b>4 · Add richness</b></td><td>Template Agent, prompt versioning, industry benchmark, evaluation DNA, RAG Q&amp;A, comparison, analyst overrides, PDF report, history.</td><td>Make it useful for a real procurement analyst.</td></tr>
+  <tr><td><b>5 · Test</b></td><td>37 automated tests, plus browser walkthroughs of every page, including the bad-input, malformed-AI-output and tie-break cases.</td><td>Prove the calculations and guardrails work.</td></tr>
+  <tr><td><b>6 · Ship</b></td><td>GitHub repository, Streamlit Community Cloud deployment, README, this document and a demo video.</td><td>Submission requirements.</td></tr>
+</table>
+
+<h2>3. Tools and technologies</h2>
+<table>
+  <tr><th style="width:21%">Tool</th><th style="width:37%">What I used it for</th><th>Why this choice</th></tr>
+  <tr><td><b>Claude (Anthropic)</b> as AI coding agent</td><td>Wrote the code to my specifications, generated the synthetic RFP and proposal PDFs, and wrote the tests and documentation. I reviewed, tested and directed each iteration.</td><td>The instructor encouraged using a coding agent "to full extent"; it let me focus on design, requirements and testing.</td></tr>
+  <tr><td><b>Python 3.12</b></td><td>The whole application, in modular files (one per agent or tool).</td><td>Course language; the class asked for modules, not a notebook.</td></tr>
+  <tr><td><b>Streamlit</b></td><td>Multi-page web UI (<code>st.navigation</code>), data editors, charts, downloads.</td><td>Required by the brief; fast to build interactive data apps.</td></tr>
+  <tr><td><b>LangGraph</b></td><td>The Orchestrator: a state machine with nodes, edges and a conditional "no readable PDF" route.</td><td>Taught in Modules 3-4; makes the agent flow explicit and traceable.</td></tr>
+  <tr><td><b>SQLite</b></td><td>Templates, criteria, prompt versions, runs, results, proposal text, DNA, overrides.</td><td>Required; zero setup; the same schema could move to Postgres.</td></tr>
+  <tr><td><b>LLM: Cohere</b> <code>command-a-03-2025</code> (default)</td><td>Template drafting, supplier scoring and Q&amp;A answers, through the OpenAI-compatible API. OpenRouter, OpenAI and Groq are switchable from a dropdown.</td><td>Free trial key, strong instruction following and JSON output; provider-agnostic, so there is no lock-in.</td></tr>
+  <tr><td><b>PyMuPDF / pypdf</b></td><td>PDF text extraction, with a fallback; header and footer removal.</td><td>Reliable on text PDFs; the fallback adds robustness.</td></tr>
+  <tr><td><b>Pydantic</b></td><td>Schema validation of every AI reply.</td><td>Treats the LLM as an untrusted component.</td></tr>
+  <tr><td><b>Altair, ReportLab</b></td><td>Charts (leaderboard, heatmaps, comparison) and the one-click PDF report.</td><td>Clear visuals; a shareable output for managers.</td></tr>
+  <tr><td><b>pytest</b></td><td>37 automated tests, including a fake LLM API for the AI paths.</td><td>Repeatable proof that the formulas and guardrails work.</td></tr>
+  <tr><td><b>VS Code, GitHub Desktop, Streamlit Community Cloud</b></td><td>Running locally, publishing the code and hosting the public app.</td><td>Free, beginner-friendly, required for submission.</td></tr>
+</table>
+
+<div class="keep"><h2>4. End-to-end flow</h2>
+<p class="legend"><span class="tag ai">orange</span> = the AI is involved · <span class="tag">blue</span> = deterministic code or database</p>
+<div class="flow">
+  <div class="step ai"><b><span class="n">1</span>Template</b>Upload the client RFP; the Template Agent drafts criteria, weights and industry benchmarks; the analyst reviews and saves.</div>
+  <div class="step"><b><span class="n">2</span>Configure</b>Edit criteria (weights must total 100%) and the versioned AI prompt, with a live preview.</div>
+  <div class="step"><b><span class="n">3</span>Input</b>Upload any number of supplier PDFs; enter supplier name, submission date and experience rating (validated).</div>
+  <div class="step"><b><span class="n">4</span>Batch</b>Generate the RFP_RUN_ID; save a run row and one PENDING entry per supplier in SQLite.</div>
+  <div class="step"><b><span class="n">5</span>Extract</b>Document Tool: clean text from each PDF; scanned or corrupt files are skipped with a reason.</div>
+  <div class="step ai"><b><span class="n">6</span>Evaluate</b>DNA check first. If there's no match, the Evaluation Agent scores each criterion with a justification, a quote and an industry score.</div>
+  <div class="step"><b><span class="n">7</span>Validate</b>Parse JSON, fix missing or out-of-range scores, verify each quote exists in the PDF, record warnings.</div>
+  <div class="step"><b><span class="n">8</span>Score &amp; benchmark</b>Absolute score, best-peer benchmark, gaps, relative %, PPI, industry alignment.</div>
+  <div class="step"><b><span class="n">9</span>Rank &amp; persist</b>Mandatory tie-break sort, ranks 1..n, written explanations; everything saved under one run ID.</div>
+  <div class="step ai"><b><span class="n">10</span>Present &amp; explore</b>Leaderboard, peer and industry views, scorecards, compare, overrides, Q&amp;A (RAG), PDF, JSON and CSV export, history.</div>
+</div></div>
+<img class="shot" src="leaderboard_crop.png" style="max-height:105mm;object-fit:contain">
+<p class="cap">Results page: leaderboard with PPI, absolute score, industry alignment and a written reason for every position.</p>
+
+<h2>5. The AI components and how I kept them honest</h2>
+<table>
+  <tr><th style="width:18%">AI component</th><th style="width:40%">What it does</th><th>Guardrails</th></tr>
+  <tr><td><b>Template Agent</b></td><td>Reads the client RFP and returns the title, buyer, industry, summary, key requirements, and 4-7 criteria with weights, a description and an industry best-practice benchmark.</td><td>Uses the RFP's own weights if stated; weights normalised to exactly 100; the analyst reviews before saving; a rules-based parser is the fallback.</td></tr>
+  <tr><td><b>Evaluation Agent</b></td><td>Scores <b>one</b> supplier at a time on every criterion: score, industry score, justification, verbatim evidence quote, strengths, weaknesses, risks, summary.</td><td>"Use only the document"; JSON mode; temperature 0; a scoring guide; one repair retry; Pydantic validation; quotes checked against the PDF; the AI never sees other suppliers or does the maths.</td></tr>
+  <tr><td><b>Q&amp;A (RAG)</b></td><td>Answers analyst questions across proposals: chunk the text (with page numbers), retrieve with BM25 per supplier, answer with citations [n].</td><td>Answers only from the retrieved excerpts, and says "the proposals do not say" otherwise; sources are shown under every answer.</td></tr>
+</table>
+<h3>Prompt design (editable in the app, versioned in SQLite)</h3>
+<ul>
+  <li><b>System message:</b> the role (senior procurement evaluator), 8 rules and a 0-10 scoring guide.</li>
+  <li><b>User message:</b> the RFP context (client, industry, requirements), every criterion with its id, weight, max score, what to inspect and the industry best practice, the required JSON shape, and the proposal text fenced between markers.</li>
+  <li>Placeholders are checked before a prompt edit can be saved, and every run records which prompt version it used.</li>
+</ul>
+<h3>Evaluation DNA (fingerprint reuse)</h3>
+<ul>
+  <li>Fingerprint = hash of (model + proposal file hash + criteria + prompt). A match reuses the stored scorecard: the same evaluation, zero AI cost.</li>
+  <li>Any change to the document, criteria, prompt or model produces a fresh evaluation. Identical files in one batch are flagged as duplicate submissions.</li>
+</ul>
+
+<h2>6. Scoring and ranking logic (deterministic Python)</h2>
+<table>
+  <tr><th style="width:30%">Metric</th><th>Formula</th></tr>
+  <tr><td>Absolute weighted score</td><td>Σ (criterion score ÷ max score) × weight → 0-100</td></tr>
+  <tr><td>Criterion benchmark</td><td>Highest validated score for the criterion among the suppliers in the run</td></tr>
+  <tr><td>Gap / Relative %</td><td>Score − benchmark · Score ÷ benchmark × 100 (0 for everyone if the benchmark is 0, with a warning)</td></tr>
+  <tr><td><b>Peer Performance Index (ranking)</b></td><td>Σ (relative % × weight) ÷ Σ weights</td></tr>
+  <tr><td>Industry Alignment Index</td><td>Σ (industry score ÷ max) × weight. Shown alongside, not used to rank.</td></tr>
+  <tr><td>Tie-break order</td><td>1) higher PPI → 2) earlier submission date → 3) higher experience rating → 4) supplier name A-Z; ranks assigned after one stable sort</td></tr>
+</table>
+<p><b>Worked example (unit-tested):</b> Technical 60% and Commercial 40%. A scores 8 and 5; B scores 4 and 10.
+Absolute: A = 68, B = 64. Benchmarks are 8 and 10, so A's relative scores are 100% and 50%, giving PPI 80; B's are 50% and 100%, giving PPI 70. A ranks first.</p>
+
+<h2>7. Features beyond the brief and why they matter</h2>
+<table>
+  <tr><th style="width:27%">Feature</th><th>Value to a procurement analyst</th></tr>
+  <tr><td>Template-first criteria from any RFP</td><td>Works for software, vehicles, medicines and more; shown with two different domains.</td></tr>
+  <tr><td>Editable, versioned AI prompt and preview</td><td>Analysts can tune the evaluator without code, and every run records the version used.</td></tr>
+  <tr><td>Peer and industry benchmarking</td><td>"Best among bidders" and "good by market standards" are different questions; both are answered.</td></tr>
+  <tr><td>Evidence verification</td><td>Catches invented quotes (hallucinations) before anyone relies on them.</td></tr>
+  <tr><td>Analyst overrides with reasons</td><td>Keeps the human in control, with a full audit log and instant re-ranking.</td></tr>
+  <tr><td>Ask the proposals (RAG)</td><td>Answers questions like "who holds SOC 2?" in seconds, with citations.</td></tr>
+  <tr><td>Compare two suppliers</td><td>Side-by-side scores and evidence for shortlisting discussions.</td></tr>
+  <tr><td>Evaluation DNA, history, PDF report</td><td>Reproducible results, lower cost, past runs reopenable, a shareable report.</td></tr>
+  <tr><td>Testing tools and offline mode</td><td>Show validation and tie-breaks on demand; try the app without a key.</td></tr>
+</table>
+
+<h2>8. Testing and validation</h2>
+<div class="two">
+  <div>
+    <h3>Automated (37 tests, pytest)</h3>
+    <ul>
+      <li>Formulas against hand calculations; all 4 tie-break rules; zero benchmark; input-order independence</li>
+      <li>Every validation rule; evidence check; prompt placeholder checks and versioning</li>
+      <li>Template parser on both RFPs; AI template drafting, JSON repair retry and API errors via a fake LLM</li>
+      <li>DNA reuse and invalidation; duplicates; bad files; a fully failed run; RAG; the PDF report; both domains end to end</li>
+    </ul>
+  </div>
+  <div>
+    <h3>Edge cases demonstrated in the app</h3>
+    <ul>
+      <li>A scanned PDF and a corrupt "PDF" are skipped with reasons; the run continues</li>
+      <li>Malformed AI output (score 14/10, "eight", a missing criterion, an unknown id, an invented quote) is normalised with warnings</li>
+      <li>An identical copy of a proposal ties on PPI and is ordered by rule 3; flagged as a duplicate</li>
+      <li>Invalid metadata, or weights not totalling 100%, block the run with clear messages</li>
+    </ul>
+  </div>
+</div>
+
+<h2>9. Mapping to the evaluation rubric</h2>
+<table>
+  <tr><th style="width:27%">Rubric area (marks)</th><th>Where it is addressed</th></tr>
+  <tr><td>Agentic workflow &amp; tool use (20)</td><td>LangGraph Orchestrator with 8 nodes and a conditional route; 8 single-purpose agents and tools; execution trace in the UI and export.</td></tr>
+  <tr><td>PDF extraction &amp; prompting (15)</td><td>PyMuPDF with pypdf fallback and header cleaning; a prompt built from DB criteria and template context; evidence-grounded JSON; editable prompt.</td></tr>
+  <tr><td>Validation &amp; scoring (20)</td><td>Pydantic schema, normalisation rules, evidence verification, weighted calculations, unit-tested formulas.</td></tr>
+  <tr><td>Peer ranking &amp; tie-breaks (20)</td><td>Benchmarks, gaps, PPI, deterministic 4-rule sort, a written explanation for every position, tie-break demo.</td></tr>
+  <tr><td>SQLite &amp; persistence (10)</td><td>9 tables; criteria and complete run results stored under one RFP_RUN_ID; history and re-scoring.</td></tr>
+  <tr><td>Streamlit UI (10)</td><td>7 pages; guided home checklist; leaderboard, drill-down scorecards, comparison, Q&amp;A; JSON, CSV and PDF downloads.</td></tr>
+  <tr><td>Documentation &amp; testing (5)</td><td>README, this document, 37 tests, synthetic data generator, one-click Windows launcher.</td></tr>
+</table>
+
+<h2>10. Limitations and next steps</h2>
+<ul>
+  <li><b>Scanned proposals</b> are rejected; adding OCR (Tesseract or Azure Document Intelligence) is the obvious next step.</li>
+  <li><b>Storage</b> on Streamlit Community Cloud is temporary; production would use a managed database with the same schema.</li>
+  <li><b>AI scores</b> are a first draft for the panel. A second "challenger" model, or self-consistency voting on borderline scores, would add confidence.</li>
+  <li><b>Q&amp;A retrieval</b> is keyword-based (BM25). Hybrid retrieval with embeddings and re-ranking (Module 3) would help with paraphrased questions.</li>
+  <li>For a real deployment I would add LangSmith tracing, a golden test set for scoring accuracy, and role-based access.</li>
+</ul>
+
+<h2>11. What I learned, linked to the course</h2>
+<table>
+  <tr><th style="width:30%">Course topic</th><th>Where it shows up in this project</th></tr>
+  <tr><td>NLP preprocessing (Module 1)</td><td>Cleaning extracted PDF text, tokenisation and stemming for retrieval.</td></tr>
+  <tr><td>LLMs and prompt engineering (Modules 2-3)</td><td>Role, rules and format prompts; JSON output; temperature 0; repair prompts; prompt versioning.</td></tr>
+  <tr><td>RAG (Modules 2-3)</td><td>Chunking with metadata, BM25 retrieval, answers grounded in cited excerpts.</td></tr>
+  <tr><td>Agents and LangGraph (Modules 3-4)</td><td>A state-machine orchestrator, tools with single responsibilities, conditional routing.</td></tr>
+  <tr><td>Evaluation and LLMOps (Modules 3-4)</td><td>Treating AI output as untrusted, validation layers, automated tests, reproducibility through fingerprints.</td></tr>
+  <tr><td>Systems thinking (Module 4)</td><td>Separating judgement (AI) from decision rules (code); a human-in-the-loop override with audit.</td></tr>
+</table>
+<p class="note">All companies, people, prices and references in the sample documents are fictional and were created for this classroom project.</p>
+</body>
+</html>

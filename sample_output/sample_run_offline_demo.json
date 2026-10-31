@@ -1,83 +1,522 @@
 {
-  "rfp_run_id": "RFP-20261025-124347-AE9897",
-  "rfp_title": "KML/HR/2026/014 - HR Service Delivery Platform",
-  "created_at": "2026-10-25T12:43:47Z",
+  "rfp_run_id": "RFP-20261031-045357-F75912",
+  "created_at": "2026-10-31T04:53:57Z",
   "status": "COMPLETED",
-  "evaluation_mode": "OFFLINE_DEMO (keyword heuristic - no LLM)",
+  "revision": 1,
+  "template": {
+    "template_id": 1,
+    "name": "Kestrel - HR Service Delivery Platform (sample)",
+    "buyer": "Kestrel Manufacturing Ltd (fictional)",
+    "industry": "Enterprise HR technology / SaaS",
+    "summary": "Kestrel, a 6,500-employee manufacturer with 4 plants and a head office, wants a cloud HR service delivery platform: employee self-service portal, HR case management with SLAs, a policy knowledge base, and integration with SAP SuccessFactors and Microsoft Entra ID single sign-on.",
+    "requirements": [
+      "Employee portal usable by office and frontline (plant) employees",
+      "HR case management with SLA tracking and escalation",
+      "Integration with SAP SuccessFactors HRIS and Microsoft Entra ID SSO",
+      "India data residency and DPDP Act 2023 compliance",
+      "Go-live across all sites within about 5 months",
+      "Three-year total cost of ownership with clear assumptions"
+    ]
+  },
+  "rfp_title": "Kestrel - HR Service Delivery Platform (sample)",
+  "evaluation_mode": "OFFLINE_DEMO (keyword heuristic - no AI)",
+  "prompt_versions": {
+    "evaluation_system": 0,
+    "evaluation_user": 0
+  },
   "criteria": [
     {
       "criterion_id": 1,
+      "template_id": 1,
       "name": "Technical Capability",
       "description": "Architecture, integrations, scalability and overall technical fit to the requirement.",
+      "industry_benchmark": "Cloud-native platform with certified HRIS connectors, open REST APIs, SSO/SCIM, 99.9%+ availability and proven load testing at several times the client's headcount.",
       "weight": 30.0,
       "max_score": 10,
       "is_active": 1
     },
     {
       "criterion_id": 2,
+      "template_id": 1,
       "name": "Implementation Plan",
       "description": "Timeline, milestones, staffing, governance and risk/mitigation plan.",
+      "industry_benchmark": "Phased plan with dated milestones and exit criteria, named team, pilot before roll-out, RAID log and hypercare; typical HR service delivery go-live is 12-20 weeks.",
       "weight": 20.0,
       "max_score": 10,
       "is_active": 1
     },
     {
       "criterion_id": 3,
+      "template_id": 1,
       "name": "Commercial Value",
       "description": "Pricing clarity, total cost of ownership, stated assumptions and exclusions.",
+      "industry_benchmark": "Transparent 3-year TCO, fixed-price or milestone-linked implementation, price locks, and all assumptions and exclusions stated - no open-ended estimates.",
       "weight": 20.0,
       "max_score": 10,
       "is_active": 1
     },
     {
       "criterion_id": 4,
+      "template_id": 1,
       "name": "Security & Compliance",
       "description": "Security controls, certifications (e.g. ISO 27001, SOC 2), data privacy and auditability.",
+      "industry_benchmark": "Current ISO 27001 and SOC 2 Type II, encryption at rest and in transit, local data residency, DPDP/GDPR processes, MFA, immutable audit logs and independent penetration testing.",
       "weight": 20.0,
       "max_score": 10,
       "is_active": 1
     },
     {
       "criterion_id": 5,
+      "template_id": 1,
       "name": "Support & Experience",
       "description": "Support model and SLAs, similar past projects and client references.",
+      "industry_benchmark": "24x7 P1 support with response SLAs and service credits, a customer success manager, and several referenceable implementations of similar size and industry.",
       "weight": 10.0,
       "max_score": 10,
       "is_active": 1
     }
   ],
   "formulas": {
-    "absolute_weighted_score": "sum((criterion score / max score) x criterion weight); 0-100",
-    "criterion_benchmark": "highest validated score for the criterion across all evaluated suppliers",
-    "criterion_gap": "supplier score - benchmark score (0 for the leader, otherwise negative)",
-    "relative_performance_pct": "supplier score / benchmark x 100; 0 for everyone if the benchmark is 0",
-    "peer_performance_index": "sum(relative % x weight) / sum(weights)",
-    "tie_break_order": "1) higher PPI 2) earlier submission date 3) higher experience rating 4) supplier name A-Z"
+    "Absolute weighted score": "sum((criterion score / max score) x weight) -> 0-100",
+    "Criterion benchmark": "highest validated score for the criterion across evaluated suppliers",
+    "Criterion gap": "supplier score - benchmark (0 for the leader, otherwise negative)",
+    "Relative performance %": "supplier score / benchmark x 100 (0 for everyone if the benchmark is 0)",
+    "Peer Performance Index (PPI)": "sum(relative % x weight) / sum(weights) -> used for ranking",
+    "Industry Alignment Index": "sum((industry score / max score) x weight) -> 0-100, shown alongside",
+    "Tie-break order": "1) higher PPI 2) earlier submission date 3) higher experience rating 4) supplier name A-Z"
   },
-  "suppliers": [
+  "scorecards": [
     {
       "supplier_name": "Apex Systems",
       "submission_date": "2026-10-06",
       "experience_rating": 4.0,
       "source_file": "Apex_Systems_RFP_Response.pdf",
-      "document_sha256": "facc69a2bbffb4befcce264e88761f4a0a10a8ecc37025d668d78b3d68e25216",
+      "document_sha256": "0d5999ab17c1c1dcc2b779b81ace2c4327a7b7f2898ef9217c66fb9cd3efae62",
+      "dna_fingerprint": "d7673ed0dfd33b111fa53522af8a00eb8c5dc957e9374c649a997dc622c7201f",
+      "dna_reused": false,
+      "dna_origin_run": "",
       "criteria": [
         {
           "criterion_id": 1,
           "name": "Technical Capability",
           "weight": 30.0,
           "max_score": 10,
-          "score": 10.0,
-          "justification": "Offline heuristic: 12 of 14 indicator terms found (25 mentions) for Technical Capability.",
-          "evidence": "Executive Summary Apex Systems proposes ApexHR Nexus, an enterprise-grade HR service delivery platform built on a cloud-native microservices architecture.",
+          "score": 9,
+          "industry_score": 8,
+          "justification": "Offline heuristic: 16 of 18 indicator terms found (39 mentions) for Technical Capability.",
+          "evidence": "HRIS integration: certified SAP SuccessFactors connector using OData v4 APIs with near real-time delta sync every 15 minutes and event-driven updates for joiners, movers and leavers.",
+          "evidence_verified": true,
+          "status": "OK"
+        },
+        {
+          "criterion_id": 2,
+          "name": "Implementation Plan",
+          "weight": 20.0,
+          "max_score": 10,
+          "score": 7,
+          "industry_score": 6,
+          "justification": "Offline heuristic: 10 of 18 indicator terms found (15 mentions) for Implementation Plan.",
+          "evidence": "Implementation Approach, Timeline and Team We follow a four-phase approach over 18 weeks: Discover and Design (weeks 1-4), Build and Integrate (weeks 5-11), Test and Train (weeks 12-15) and Go-live with Hypercare (weeks 16-18).",
+          "evidence_verified": true,
+          "status": "OK"
+        },
+        {
+          "criterion_id": 3,
+          "name": "Commercial Value",
+          "weight": 20.0,
+          "max_score": 10,
+          "score": 7,
+          "industry_score": 6,
+          "justification": "Offline heuristic: 9 of 18 indicator terms found (16 mentions) for Commercial Value.",
+          "evidence": "Commercial Proposal Subscription (6,500 employees) Implementation services (fixed price) Premium support and TAM Total 1,16,50,000 Three-year total cost of ownership: INR 2,48,42,500 excluding GST.",
+          "evidence_verified": true,
+          "status": "OK"
+        },
+        {
+          "criterion_id": 4,
+          "name": "Security & Compliance",
+          "weight": 20.0,
+          "max_score": 10,
+          "score": 8,
+          "industry_score": 7,
+          "justification": "Offline heuristic: 13 of 18 indicator terms found (28 mentions) for Security & Compliance.",
+          "evidence": "Security, Compliance and Risk Controls ISO 27001:2022 certified (certificate no.",
+          "evidence_verified": true,
+          "status": "OK"
+        },
+        {
+          "criterion_id": 5,
+          "name": "Support & Experience",
+          "weight": 10.0,
+          "max_score": 10,
+          "score": 8,
+          "industry_score": 7,
+          "justification": "Offline heuristic: 11 of 18 indicator terms found (36 mentions) for Support & Experience.",
+          "evidence": "Support Model and Relevant Experience Support is provided 24x7 for Priority 1 incidents (response within 30 minutes) and business hours for lower priorities, with a named Technical Account Manager.",
+          "evidence_verified": true,
+          "status": "OK"
+        }
+      ],
+      "strengths": [],
+      "weaknesses": [],
+      "risks": [
+        "Offline demo mode: strengths, weaknesses and risks need an AI provider."
+      ],
+      "overall_summary": "Scored by the offline keyword heuristic for demonstration only.",
+      "validation_warnings": [],
+      "evaluation_model": "OFFLINE_DEMO (keyword heuristic - no AI)"
+    },
+    {
+      "supplier_name": "BrightPath Tech",
+      "submission_date": "2026-10-03",
+      "experience_rating": 2.0,
+      "source_file": "BrightPath_Tech_RFP_Response.pdf",
+      "document_sha256": "da2fc19e6eedc8cb012d7dba2c19b9bd8e8cf0f7a4f9239f8085724bbad68bc8",
+      "dna_fingerprint": "46ec55889a5d62b8d584ac64aac1d16327f97d91805c3bded68f8462d72b4e49",
+      "dna_reused": false,
+      "dna_origin_run": "",
+      "criteria": [
+        {
+          "criterion_id": 1,
+          "name": "Technical Capability",
+          "weight": 30.0,
+          "max_score": 10,
+          "score": 6,
+          "industry_score": 5,
+          "justification": "Offline heuristic: 7 of 18 indicator terms found (10 mentions) for Technical Capability.",
+          "evidence": "- Integration with HR systems through CSV file upload, with an API connector planned for 2027.",
+          "evidence_verified": true,
+          "status": "OK"
+        },
+        {
+          "criterion_id": 2,
+          "name": "Implementation Plan",
+          "weight": 20.0,
+          "max_score": 10,
+          "score": 5,
+          "industry_score": 4,
+          "justification": "Offline heuristic: 3 of 18 indicator terms found (6 mentions) for Implementation Plan.",
+          "evidence": "Implementation Plan Our rapid deployment method gets customers live in 10 weeks:",
+          "evidence_verified": true,
+          "status": "OK"
+        },
+        {
+          "criterion_id": 3,
+          "name": "Commercial Value",
+          "weight": 20.0,
+          "max_score": 10,
+          "score": 6,
+          "industry_score": 5,
+          "justification": "Offline heuristic: 6 of 18 indicator terms found (10 mentions) for Commercial Value.",
+          "evidence": "Pricing Item Cost (INR) Annual subscription (per year, up to 7,000 employees) 29,00,000 One-time implementation 14,00,000 3-year total 1,01,00,000 Support is included in the subscription.",
+          "evidence_verified": true,
+          "status": "OK"
+        },
+        {
+          "criterion_id": 4,
+          "name": "Security & Compliance",
+          "weight": 20.0,
+          "max_score": 10,
+          "score": 6,
+          "industry_score": 5,
+          "justification": "Offline heuristic: 5 of 18 indicator terms found (10 mentions) for Security & Compliance.",
+          "evidence": "We are currently working towards ISO certification.",
+          "evidence_verified": true,
+          "status": "OK"
+        },
+        {
+          "criterion_id": 5,
+          "name": "Support & Experience",
+          "weight": 10.0,
+          "max_score": 10,
+          "score": 7,
+          "industry_score": 6,
+          "justification": "Offline heuristic: 9 of 18 indicator terms found (18 mentions) for Support & Experience.",
+          "evidence": "Implementation Plan Our rapid deployment method gets customers live in 10 weeks:",
+          "evidence_verified": true,
+          "status": "OK"
+        }
+      ],
+      "strengths": [],
+      "weaknesses": [],
+      "risks": [
+        "Offline demo mode: strengths, weaknesses and risks need an AI provider."
+      ],
+      "overall_summary": "Scored by the offline keyword heuristic for demonstration only.",
+      "validation_warnings": [],
+      "evaluation_model": "OFFLINE_DEMO (keyword heuristic - no AI)"
+    },
+    {
+      "supplier_name": "NexaWorks",
+      "submission_date": "2026-10-07",
+      "experience_rating": 4.0,
+      "source_file": "NexaWorks_RFP_Response.pdf",
+      "document_sha256": "147cf40d3516b9b97179f9f525208d1770e8d390c573ef934c8bcd9fcdf6258e",
+      "dna_fingerprint": "543f3d15b0c2fc2cf558d12c2ff157d605c9ad72ac024c64f15937a9423c1d03",
+      "dna_reused": false,
+      "dna_origin_run": "",
+      "criteria": [
+        {
+          "criterion_id": 1,
+          "name": "Technical Capability",
+          "weight": 30.0,
+          "max_score": 10,
+          "score": 7,
+          "industry_score": 6,
+          "justification": "Offline heuristic: 10 of 18 indicator terms found (21 mentions) for Technical Capability.",
+          "evidence": "Our Understanding Kestrel requires a cloud HR service delivery platform for about 6,500 employees across 4 plants and a head office: an employee self-service portal, HR case management with SLAs, a policy knowledge base, and integration with the existing SAP",
+          "evidence_verified": true,
+          "status": "OK"
+        },
+        {
+          "criterion_id": 2,
+          "name": "Implementation Plan",
+          "weight": 20.0,
+          "max_score": 10,
+          "score": 9,
+          "industry_score": 8,
+          "justification": "Offline heuristic: 15 of 18 indicator terms found (35 mentions) for Implementation Plan.",
+          "evidence": "Implementation Plan, Team and Milestones We use a phased, fixed-price delivery over 16 weeks with a pilot plant before full roll-out.",
+          "evidence_verified": true,
+          "status": "OK"
+        },
+        {
+          "criterion_id": 3,
+          "name": "Commercial Value",
+          "weight": 20.0,
+          "max_score": 10,
+          "score": 7,
+          "industry_score": 6,
+          "justification": "Offline heuristic: 9 of 18 indicator terms found (24 mentions) for Commercial Value.",
+          "evidence": "Commercial Proposal Item Year 1 (INR) Year 2 (INR) Year 3 (INR) Subscription (6,500 employees) 44,00,000 44,00,000 44,00,000 Implementation (fixed price, milestone-based) 30,00,000 Enhanced support (included) 0 0 0 Total 74,00,000 44,00,000 44,00,000 Three-year total: INR 1,62,00,000 excluding GST.",
+          "evidence_verified": true,
+          "status": "OK"
+        },
+        {
+          "criterion_id": 4,
+          "name": "Security & Compliance",
+          "weight": 20.0,
+          "max_score": 10,
+          "score": 8,
+          "industry_score": 7,
+          "justification": "Offline heuristic: 11 of 18 indicator terms found (19 mentions) for Security & Compliance.",
+          "evidence": "Data is encrypted at rest and in transit, hosted in India, and processed in line with the DPDP Act 2023.",
+          "evidence_verified": true,
+          "status": "OK"
+        },
+        {
+          "criterion_id": 5,
+          "name": "Support & Experience",
+          "weight": 10.0,
+          "max_score": 10,
+          "score": 8,
+          "industry_score": 7,
+          "justification": "Offline heuristic: 12 of 18 indicator terms found (38 mentions) for Support & Experience.",
+          "evidence": "Support Model and Experience Priority Response Resolution target Service credit if missed P1 - platform down 15 minutes, 24x7 4 hours 10% of monthly fee P2 - major function impaired 1 hour, 24x7 8 hours 5% of monthly fee P3",
+          "evidence_verified": true,
+          "status": "OK"
+        }
+      ],
+      "strengths": [],
+      "weaknesses": [],
+      "risks": [
+        "Offline demo mode: strengths, weaknesses and risks need an AI provider."
+      ],
+      "overall_summary": "Scored by the offline keyword heuristic for demonstration only.",
+      "validation_warnings": [],
+      "evaluation_model": "OFFLINE_DEMO (keyword heuristic - no AI)"
+    },
+    {
+      "supplier_name": "Orbit Digital",
+      "submission_date": "2026-10-07",
+      "experience_rating": 5.0,
+      "source_file": "Orbit_Digital_RFP_Response.pdf",
+      "document_sha256": "e9be29faa1c5a4e6bd7ec9ebcd891d9147aa807b2f1e4a3152b3a73d192119ad",
+      "dna_fingerprint": "cf4aaccef46b6c8ada989169e8407b3096629ddacd3c0e3f4c06328a1674e8d1",
+      "dna_reused": false,
+      "dna_origin_run": "",
+      "criteria": [
+        {
+          "criterion_id": 1,
+          "name": "Technical Capability",
+          "weight": 30.0,
+          "max_score": 10,
+          "score": 7,
+          "industry_score": 6,
+          "justification": "Offline heuristic: 8 of 18 indicator terms found (15 mentions) for Technical Capability.",
+          "evidence": "Our Understanding Kestrel requires a cloud HR service delivery platform for about 6,500 employees across 4 plants and a head office: an employee self-service portal, HR case management with SLAs, a policy knowledge base, and integration with the existing SAP",
+          "evidence_verified": true,
+          "status": "OK"
+        },
+        {
+          "criterion_id": 2,
+          "name": "Implementation Plan",
+          "weight": 20.0,
+          "max_score": 10,
+          "score": 5,
+          "industry_score": 4,
+          "justification": "Offline heuristic: 4 of 18 indicator terms found (10 mentions) for Implementation Plan.",
+          "evidence": "A detailed plan with milestones will be shared after discovery.",
+          "evidence_verified": true,
+          "status": "OK"
+        },
+        {
+          "criterion_id": 3,
+          "name": "Commercial Value",
+          "weight": 20.0,
+          "max_score": 10,
+          "score": 6,
+          "industry_score": 5,
+          "justification": "Offline heuristic: 6 of 18 indicator terms found (11 mentions) for Commercial Value.",
+          "evidence": "Commercial Proposal Item Amount (INR) Subscription - 3 years (6,500 employees) 1,23,00,000 Implementation services (estimate) 38,00,000 Support (standard, included) Included Total 3-year estimate 1,61,00,000 Implementation services are estimated and may change after discovery.",
+          "evidence_verified": true,
+          "status": "OK"
+        },
+        {
+          "criterion_id": 4,
+          "name": "Security & Compliance",
+          "weight": 20.0,
+          "max_score": 10,
+          "score": 6,
+          "industry_score": 5,
+          "justification": "Offline heuristic: 6 of 18 indicator terms found (8 mentions) for Security & Compliance.",
+          "evidence": "Security and Compliance Orbit Digital is ISO 27001 certified.",
+          "evidence_verified": true,
+          "status": "OK"
+        },
+        {
+          "criterion_id": 5,
+          "name": "Support & Experience",
+          "weight": 10.0,
+          "max_score": 10,
+          "score": 8,
+          "industry_score": 7,
+          "justification": "Offline heuristic: 13 of 18 indicator terms found (39 mentions) for Support & Experience.",
+          "evidence": "Support, Experience and References Support is available 8am-8pm IST on weekdays through our service desk, with P1 response within 1 hour.",
+          "evidence_verified": true,
+          "status": "OK"
+        }
+      ],
+      "strengths": [],
+      "weaknesses": [],
+      "risks": [
+        "Offline demo mode: strengths, weaknesses and risks need an AI provider."
+      ],
+      "overall_summary": "Scored by the offline keyword heuristic for demonstration only.",
+      "validation_warnings": [],
+      "evaluation_model": "OFFLINE_DEMO (keyword heuristic - no AI)"
+    },
+    {
+      "supplier_name": "Vertex Cloud Partners",
+      "submission_date": "2026-10-08",
+      "experience_rating": 3.0,
+      "source_file": "Vertex_Cloud_Partners_RFP_Response.pdf",
+      "document_sha256": "7a191f1f8488aeb02e6e8908301d76d94574c321df265b4501620cbe723ba642",
+      "dna_fingerprint": "4de011654f4a926cc3721ad9200c057f12d1416ee748848db01c5a41a9926f4e",
+      "dna_reused": false,
+      "dna_origin_run": "",
+      "criteria": [
+        {
+          "criterion_id": 1,
+          "name": "Technical Capability",
+          "weight": 30.0,
+          "max_score": 10,
+          "score": 6,
+          "industry_score": 5,
+          "justification": "Offline heuristic: 6 of 18 indicator terms found (12 mentions) for Technical Capability.",
+          "evidence": "Understanding of the Requirement Kestrel wants to modernise HR service delivery for its employees with a portal, case management and integrations.",
+          "evidence_verified": true,
+          "status": "OK"
+        },
+        {
+          "criterion_id": 2,
+          "name": "Implementation Plan",
+          "weight": 20.0,
+          "max_score": 10,
+          "score": 5,
+          "industry_score": 4,
+          "justification": "Offline heuristic: 3 of 18 indicator terms found (4 mentions) for Implementation Plan.",
+          "evidence": "Implementation Plan Using our accelerated AgileX methodology we will deliver in 12 weeks: weeks 1-4 setup, weeks 5-10 build and test, weeks 11-12 go-live.",
+          "evidence_verified": true,
+          "status": "OK"
+        },
+        {
+          "criterion_id": 3,
+          "name": "Commercial Value",
+          "weight": 20.0,
+          "max_score": 10,
+          "score": 6,
+          "industry_score": 5,
+          "justification": "Offline heuristic: 5 of 18 indicator terms found (7 mentions) for Commercial Value.",
+          "evidence": "Commercial Proposal Item Amount (INR) Platform subscription (per employee per month) 190 Implementation (indicative) To be confirmed after workshops AI add-on module Optional - priced separately Indicative three-year subscription for 6,500 employees is about INR 4.45 crore.",
+          "evidence_verified": true,
+          "status": "OK"
+        },
+        {
+          "criterion_id": 4,
+          "name": "Security & Compliance",
+          "weight": 20.0,
+          "max_score": 10,
+          "score": 6,
+          "industry_score": 5,
+          "justification": "Offline heuristic: 6 of 18 indicator terms found (8 mentions) for Security & Compliance.",
+          "evidence": "Security and Compliance Vertex follows enterprise-grade security standards.",
+          "evidence_verified": true,
+          "status": "OK"
+        },
+        {
+          "criterion_id": 5,
+          "name": "Support & Experience",
+          "weight": 10.0,
+          "max_score": 10,
+          "score": 7,
+          "industry_score": 6,
+          "justification": "Offline heuristic: 8 of 18 indicator terms found (16 mentions) for Support & Experience.",
+          "evidence": "Understanding of the Requirement Kestrel wants to modernise HR service delivery for its employees with a portal, case management and integrations.",
+          "evidence_verified": true,
+          "status": "OK"
+        }
+      ],
+      "strengths": [],
+      "weaknesses": [],
+      "risks": [
+        "Offline demo mode: strengths, weaknesses and risks need an AI provider."
+      ],
+      "overall_summary": "Scored by the offline keyword heuristic for demonstration only.",
+      "validation_warnings": [],
+      "evaluation_model": "OFFLINE_DEMO (keyword heuristic - no AI)"
+    }
+  ],
+  "suppliers": [
+    {
+      "supplier_name": "Apex Systems",
+      "submission_date": "2026-10-06",
+      "experience_rating": 4.0,
+      "source_file": "Apex_Systems_RFP_Response.pdf",
+      "document_sha256": "0d5999ab17c1c1dcc2b779b81ace2c4327a7b7f2898ef9217c66fb9cd3efae62",
+      "dna_fingerprint": "d7673ed0dfd33b111fa53522af8a00eb8c5dc957e9374c649a997dc622c7201f",
+      "dna_reused": false,
+      "dna_origin_run": "",
+      "criteria": [
+        {
+          "criterion_id": 1,
+          "name": "Technical Capability",
+          "weight": 30.0,
+          "max_score": 10,
+          "score": 9.0,
+          "industry_score": 8.0,
+          "justification": "Offline heuristic: 16 of 18 indicator terms found (39 mentions) for Technical Capability.",
+          "evidence": "HRIS integration: certified SAP SuccessFactors connector using OData v4 APIs with near real-time delta sync every 15 minutes and event-driven updates for joiners, movers and leavers.",
           "evidence_verified": true,
           "status": "OK",
-          "normalised_score_pct": 100.0,
-          "weighted_points": 30.0,
-          "benchmark_score": 10.0,
+          "normalised_score_pct": 90.0,
+          "weighted_points": 27.0,
+          "benchmark_score": 9.0,
           "gap": 0.0,
           "relative_pct": 100.0,
-          "is_benchmark_leader": true
+          "is_benchmark_leader": true,
+          "industry_pct": 80.0,
+          "peer_average": 7.0
         },
         {
           "criterion_id": 2,
@@ -85,33 +524,39 @@
           "weight": 20.0,
           "max_score": 10,
           "score": 7.0,
-          "justification": "Offline heuristic: 8 of 14 indicator terms found (18 mentions) for Implementation Plan.",
+          "industry_score": 6.0,
+          "justification": "Offline heuristic: 10 of 18 indicator terms found (15 mentions) for Implementation Plan.",
           "evidence": "Implementation Approach, Timeline and Team We follow a four-phase approach over 18 weeks: Discover and Design (weeks 1-4), Build and Integrate (weeks 5-11), Test and Train (weeks 12-15) and Go-live with Hypercare (weeks 16-18).",
           "evidence_verified": true,
           "status": "OK",
           "normalised_score_pct": 70.0,
           "weighted_points": 14.0,
-          "benchmark_score": 8.0,
-          "gap": -1.0,
-          "relative_pct": 87.5,
-          "is_benchmark_leader": false
+          "benchmark_score": 9.0,
+          "gap": -2.0,
+          "relative_pct": 77.7778,
+          "is_benchmark_leader": false,
+          "industry_pct": 60.0,
+          "peer_average": 6.2
         },
         {
           "criterion_id": 3,
           "name": "Commercial Value",
           "weight": 20.0,
           "max_score": 10,
-          "score": 8.0,
-          "justification": "Offline heuristic: 8 of 13 indicator terms found (27 mentions) for Commercial Value.",
-          "evidence": "KML/HR/2026/014 - HR Service Delivery Platform | Confidential (fictional) Page 2 Item Year 1 (INR) Year 2 (INR) Year 3 (INR) Premium support and TAM 6,00,000 6,00,000 6,00,000 Total 1,16,50,000 64,50,000 67,42,500 Three-year total cost of ownership: INR 2,48,42,500 excluding",
+          "score": 7.0,
+          "industry_score": 6.0,
+          "justification": "Offline heuristic: 9 of 18 indicator terms found (16 mentions) for Commercial Value.",
+          "evidence": "Commercial Proposal Subscription (6,500 employees) Implementation services (fixed price) Premium support and TAM Total 1,16,50,000 Three-year total cost of ownership: INR 2,48,42,500 excluding GST.",
           "evidence_verified": true,
           "status": "OK",
-          "normalised_score_pct": 80.0,
-          "weighted_points": 16.0,
-          "benchmark_score": 8.0,
+          "normalised_score_pct": 70.0,
+          "weighted_points": 14.0,
+          "benchmark_score": 7.0,
           "gap": 0.0,
           "relative_pct": 100.0,
-          "is_benchmark_leader": true
+          "is_benchmark_leader": true,
+          "industry_pct": 60.0,
+          "peer_average": 6.4
         },
         {
           "criterion_id": 4,
@@ -119,8 +564,9 @@
           "weight": 20.0,
           "max_score": 10,
           "score": 8.0,
-          "justification": "Offline heuristic: 10 of 14 indicator terms found (17 mentions) for Security & Compliance.",
-          "evidence": "We commit to a contractual availability of 99.95% with active-active deployment across two Indian Azure regions (Pune and Chennai), and we hold ISO 27001:2022 and SOC 2 Type II certifications.",
+          "industry_score": 7.0,
+          "justification": "Offline heuristic: 13 of 18 indicator terms found (28 mentions) for Security & Compliance.",
+          "evidence": "Security, Compliance and Risk Controls ISO 27001:2022 certified (certificate no.",
           "evidence_verified": true,
           "status": "OK",
           "normalised_score_pct": 80.0,
@@ -128,35 +574,42 @@
           "benchmark_score": 8.0,
           "gap": 0.0,
           "relative_pct": 100.0,
-          "is_benchmark_leader": true
+          "is_benchmark_leader": true,
+          "industry_pct": 70.0,
+          "peer_average": 6.8
         },
         {
           "criterion_id": 5,
           "name": "Support & Experience",
           "weight": 10.0,
           "max_score": 10,
-          "score": 6.0,
-          "justification": "Offline heuristic: 7 of 12 indicator terms found (14 mentions) for Support & Experience.",
+          "score": 8.0,
+          "industry_score": 7.0,
+          "justification": "Offline heuristic: 11 of 18 indicator terms found (36 mentions) for Support & Experience.",
           "evidence": "Support Model and Relevant Experience Support is provided 24x7 for Priority 1 incidents (response within 30 minutes) and business hours for lower priorities, with a named Technical Account Manager.",
           "evidence_verified": true,
           "status": "OK",
-          "normalised_score_pct": 60.0,
-          "weighted_points": 6.0,
-          "benchmark_score": 7.0,
-          "gap": -1.0,
-          "relative_pct": 85.7143,
-          "is_benchmark_leader": false
+          "normalised_score_pct": 80.0,
+          "weighted_points": 8.0,
+          "benchmark_score": 8.0,
+          "gap": 0.0,
+          "relative_pct": 100.0,
+          "is_benchmark_leader": true,
+          "industry_pct": 70.0,
+          "peer_average": 7.6
         }
       ],
+      "strengths": [],
+      "weaknesses": [],
       "risks": [
-        "Offline demo mode: risks are not assessed without an LLM."
+        "Offline demo mode: strengths, weaknesses and risks need an AI provider."
       ],
       "overall_summary": "Scored by the offline keyword heuristic for demonstration only.",
       "validation_warnings": [],
-      "evaluation_model": "OFFLINE_DEMO (keyword heuristic - no LLM)",
-      "from_cache": false,
-      "absolute_score": 82.0,
-      "ppi": 96.0714,
+      "evaluation_model": "OFFLINE_DEMO (keyword heuristic - no AI)",
+      "absolute_score": 79.0,
+      "ppi": 95.5556,
+      "industry_index": 69.0,
       "final_rank": 1,
       "rank_explanation": "Highest Peer Performance Index in this run."
     },
@@ -165,41 +618,50 @@
       "submission_date": "2026-10-07",
       "experience_rating": 4.0,
       "source_file": "NexaWorks_RFP_Response.pdf",
-      "document_sha256": "cc77df4f19cea92ca7d0f638aefc89ee54f6cec2137b23c3bfd707c5ee309f32",
+      "document_sha256": "147cf40d3516b9b97179f9f525208d1770e8d390c573ef934c8bcd9fcdf6258e",
+      "dna_fingerprint": "543f3d15b0c2fc2cf558d12c2ff157d605c9ad72ac024c64f15937a9423c1d03",
+      "dna_reused": false,
+      "dna_origin_run": "",
       "criteria": [
         {
           "criterion_id": 1,
           "name": "Technical Capability",
           "weight": 30.0,
           "max_score": 10,
-          "score": 5.0,
-          "justification": "Offline heuristic: 6 of 14 indicator terms found (12 mentions) for Technical Capability.",
+          "score": 7.0,
+          "industry_score": 6.0,
+          "justification": "Offline heuristic: 10 of 18 indicator terms found (21 mentions) for Technical Capability.",
           "evidence": "Our Understanding Kestrel requires a cloud HR service delivery platform for about 6,500 employees across 4 plants and a head office: an employee self-service portal, HR case management with SLAs, a policy knowledge base, and integration with the existing SAP",
           "evidence_verified": true,
           "status": "OK",
-          "normalised_score_pct": 50.0,
-          "weighted_points": 15.0,
-          "benchmark_score": 10.0,
-          "gap": -5.0,
-          "relative_pct": 50.0,
-          "is_benchmark_leader": false
+          "normalised_score_pct": 70.0,
+          "weighted_points": 21.0,
+          "benchmark_score": 9.0,
+          "gap": -2.0,
+          "relative_pct": 77.7778,
+          "is_benchmark_leader": false,
+          "industry_pct": 60.0,
+          "peer_average": 7.0
         },
         {
           "criterion_id": 2,
           "name": "Implementation Plan",
           "weight": 20.0,
           "max_score": 10,
-          "score": 8.0,
-          "justification": "Offline heuristic: 10 of 14 indicator terms found (19 mentions) for Implementation Plan.",
-          "evidence": "Top risks and mitigations: (1) SuccessFactors data quality - data-cleansing sprint in weeks 2-4; (2) low frontline adoption - plant champions network and kiosk access; (3) HR agent capacity during go-live - phased waves and floor-walkers; (4) scope creep -",
+          "score": 9.0,
+          "industry_score": 8.0,
+          "justification": "Offline heuristic: 15 of 18 indicator terms found (35 mentions) for Implementation Plan.",
+          "evidence": "Implementation Plan, Team and Milestones We use a phased, fixed-price delivery over 16 weeks with a pilot plant before full roll-out.",
           "evidence_verified": true,
           "status": "OK",
-          "normalised_score_pct": 80.0,
-          "weighted_points": 16.0,
-          "benchmark_score": 8.0,
+          "normalised_score_pct": 90.0,
+          "weighted_points": 18.0,
+          "benchmark_score": 9.0,
           "gap": 0.0,
           "relative_pct": 100.0,
-          "is_benchmark_leader": true
+          "is_benchmark_leader": true,
+          "industry_pct": 80.0,
+          "peer_average": 6.2
         },
         {
           "criterion_id": 3,
@@ -207,16 +669,19 @@
           "weight": 20.0,
           "max_score": 10,
           "score": 7.0,
-          "justification": "Offline heuristic: 8 of 13 indicator terms found (23 mentions) for Commercial Value.",
-          "evidence": "KML/HR/2026/014 - HR Service Delivery Platform | Confidential (fictional) Page 2 Item Year 1 (INR) Year 2 (INR) Year 3 (INR) Subscription (6,500 employees) 44,00,000 44,00,000 44,00,000 Implementation (fixed price, milestone-based) 30,00,000 - - Enhanced support (included) 0 0 0",
+          "industry_score": 6.0,
+          "justification": "Offline heuristic: 9 of 18 indicator terms found (24 mentions) for Commercial Value.",
+          "evidence": "Commercial Proposal Item Year 1 (INR) Year 2 (INR) Year 3 (INR) Subscription (6,500 employees) 44,00,000 44,00,000 44,00,000 Implementation (fixed price, milestone-based) 30,00,000 Enhanced support (included) 0 0 0 Total 74,00,000 44,00,000 44,00,000 Three-year total: INR 1,62,00,000 excluding GST.",
           "evidence_verified": true,
           "status": "OK",
           "normalised_score_pct": 70.0,
           "weighted_points": 14.0,
-          "benchmark_score": 8.0,
-          "gap": -1.0,
-          "relative_pct": 87.5,
-          "is_benchmark_leader": false
+          "benchmark_score": 7.0,
+          "gap": 0.0,
+          "relative_pct": 100.0,
+          "is_benchmark_leader": true,
+          "industry_pct": 60.0,
+          "peer_average": 6.4
         },
         {
           "criterion_id": 4,
@@ -224,8 +689,9 @@
           "weight": 20.0,
           "max_score": 10,
           "score": 8.0,
-          "justification": "Offline heuristic: 10 of 14 indicator terms found (14 mentions) for Security & Compliance.",
-          "evidence": "Security and Compliance NexaWorks is ISO 27001 certified and completed a SOC 2 Type I audit in 2025 (Type II in progress).",
+          "industry_score": 7.0,
+          "justification": "Offline heuristic: 11 of 18 indicator terms found (19 mentions) for Security & Compliance.",
+          "evidence": "Data is encrypted at rest and in transit, hosted in India, and processed in line with the DPDP Act 2023.",
           "evidence_verified": true,
           "status": "OK",
           "normalised_score_pct": 80.0,
@@ -233,61 +699,74 @@
           "benchmark_score": 8.0,
           "gap": 0.0,
           "relative_pct": 100.0,
-          "is_benchmark_leader": true
+          "is_benchmark_leader": true,
+          "industry_pct": 70.0,
+          "peer_average": 6.8
         },
         {
           "criterion_id": 5,
           "name": "Support & Experience",
           "weight": 10.0,
           "max_score": 10,
-          "score": 5.0,
-          "justification": "Offline heuristic: 6 of 12 indicator terms found (13 mentions) for Support & Experience.",
+          "score": 8.0,
+          "industry_score": 7.0,
+          "justification": "Offline heuristic: 12 of 18 indicator terms found (38 mentions) for Support & Experience.",
           "evidence": "Support Model and Experience Priority Response Resolution target Service credit if missed P1 - platform down 15 minutes, 24x7 4 hours 10% of monthly fee P2 - major function impaired 1 hour, 24x7 8 hours 5% of monthly fee P3",
           "evidence_verified": true,
           "status": "OK",
-          "normalised_score_pct": 50.0,
-          "weighted_points": 5.0,
-          "benchmark_score": 7.0,
-          "gap": -2.0,
-          "relative_pct": 71.4286,
-          "is_benchmark_leader": false
+          "normalised_score_pct": 80.0,
+          "weighted_points": 8.0,
+          "benchmark_score": 8.0,
+          "gap": 0.0,
+          "relative_pct": 100.0,
+          "is_benchmark_leader": true,
+          "industry_pct": 70.0,
+          "peer_average": 7.6
         }
       ],
+      "strengths": [],
+      "weaknesses": [],
       "risks": [
-        "Offline demo mode: risks are not assessed without an LLM."
+        "Offline demo mode: strengths, weaknesses and risks need an AI provider."
       ],
       "overall_summary": "Scored by the offline keyword heuristic for demonstration only.",
       "validation_warnings": [],
-      "evaluation_model": "OFFLINE_DEMO (keyword heuristic - no LLM)",
-      "from_cache": false,
-      "absolute_score": 66.0,
-      "ppi": 79.6429,
+      "evaluation_model": "OFFLINE_DEMO (keyword heuristic - no AI)",
+      "absolute_score": 77.0,
+      "ppi": 93.3333,
+      "industry_index": 67.0,
       "final_rank": 2,
-      "rank_explanation": "Placed below Apex Systems by rule 1. Higher PPI: PPI 96.07 vs 79.64."
+      "rank_explanation": "Placed below Apex Systems by rule 1. Higher PPI: PPI 95.56 vs 93.33."
     },
     {
       "supplier_name": "Orbit Digital",
       "submission_date": "2026-10-07",
       "experience_rating": 5.0,
       "source_file": "Orbit_Digital_RFP_Response.pdf",
-      "document_sha256": "16b35bbd48190bc1aeab6f1922c4376378f9a20a18d61870e405bcdc53b148c2",
+      "document_sha256": "e9be29faa1c5a4e6bd7ec9ebcd891d9147aa807b2f1e4a3152b3a73d192119ad",
+      "dna_fingerprint": "cf4aaccef46b6c8ada989169e8407b3096629ddacd3c0e3f4c06328a1674e8d1",
+      "dna_reused": false,
+      "dna_origin_run": "",
       "criteria": [
         {
           "criterion_id": 1,
           "name": "Technical Capability",
           "weight": 30.0,
           "max_score": 10,
-          "score": 2.0,
-          "justification": "Offline heuristic: 2 of 14 indicator terms found (5 mentions) for Technical Capability.",
+          "score": 7.0,
+          "industry_score": 6.0,
+          "justification": "Offline heuristic: 8 of 18 indicator terms found (15 mentions) for Technical Capability.",
           "evidence": "Our Understanding Kestrel requires a cloud HR service delivery platform for about 6,500 employees across 4 plants and a head office: an employee self-service portal, HR case management with SLAs, a policy knowledge base, and integration with the existing SAP",
           "evidence_verified": true,
           "status": "OK",
-          "normalised_score_pct": 20.0,
-          "weighted_points": 6.0,
-          "benchmark_score": 10.0,
-          "gap": -8.0,
-          "relative_pct": 20.0,
-          "is_benchmark_leader": false
+          "normalised_score_pct": 70.0,
+          "weighted_points": 21.0,
+          "benchmark_score": 9.0,
+          "gap": -2.0,
+          "relative_pct": 77.7778,
+          "is_benchmark_leader": false,
+          "industry_pct": 60.0,
+          "peer_average": 7.0
         },
         {
           "criterion_id": 2,
@@ -295,50 +774,184 @@
           "weight": 20.0,
           "max_score": 10,
           "score": 5.0,
-          "justification": "Offline heuristic: 6 of 14 indicator terms found (12 mentions) for Implementation Plan.",
-          "evidence": "We expect an overall duration of around 20 weeks, split into discovery (4 weeks), build (9 weeks), testing (5 weeks) and go-live (2 weeks).",
+          "industry_score": 4.0,
+          "justification": "Offline heuristic: 4 of 18 indicator terms found (10 mentions) for Implementation Plan.",
+          "evidence": "A detailed plan with milestones will be shared after discovery.",
           "evidence_verified": true,
           "status": "OK",
           "normalised_score_pct": 50.0,
           "weighted_points": 10.0,
-          "benchmark_score": 8.0,
-          "gap": -3.0,
-          "relative_pct": 62.5,
-          "is_benchmark_leader": false
+          "benchmark_score": 9.0,
+          "gap": -4.0,
+          "relative_pct": 55.5556,
+          "is_benchmark_leader": false,
+          "industry_pct": 40.0,
+          "peer_average": 6.2
         },
         {
           "criterion_id": 3,
           "name": "Commercial Value",
           "weight": 20.0,
           "max_score": 10,
-          "score": 4.0,
-          "justification": "Offline heuristic: 5 of 13 indicator terms found (7 mentions) for Commercial Value.",
+          "score": 6.0,
+          "industry_score": 5.0,
+          "justification": "Offline heuristic: 6 of 18 indicator terms found (11 mentions) for Commercial Value.",
           "evidence": "Commercial Proposal Item Amount (INR) Subscription - 3 years (6,500 employees) 1,23,00,000 Implementation services (estimate) 38,00,000 Support (standard, included) Included Total 3-year estimate 1,61,00,000 Implementation services are estimated and may change after discovery.",
           "evidence_verified": true,
           "status": "OK",
-          "normalised_score_pct": 40.0,
-          "weighted_points": 8.0,
-          "benchmark_score": 8.0,
-          "gap": -4.0,
-          "relative_pct": 50.0,
-          "is_benchmark_leader": false
+          "normalised_score_pct": 60.0,
+          "weighted_points": 12.0,
+          "benchmark_score": 7.0,
+          "gap": -1.0,
+          "relative_pct": 85.7143,
+          "is_benchmark_leader": false,
+          "industry_pct": 50.0,
+          "peer_average": 6.4
         },
         {
           "criterion_id": 4,
           "name": "Security & Compliance",
           "weight": 20.0,
           "max_score": 10,
-          "score": 5.0,
-          "justification": "Offline heuristic: 7 of 14 indicator terms found (8 mentions) for Security & Compliance.",
+          "score": 6.0,
+          "industry_score": 5.0,
+          "justification": "Offline heuristic: 6 of 18 indicator terms found (8 mentions) for Security & Compliance.",
           "evidence": "Security and Compliance Orbit Digital is ISO 27001 certified.",
+          "evidence_verified": true,
+          "status": "OK",
+          "normalised_score_pct": 60.0,
+          "weighted_points": 12.0,
+          "benchmark_score": 8.0,
+          "gap": -2.0,
+          "relative_pct": 75.0,
+          "is_benchmark_leader": false,
+          "industry_pct": 50.0,
+          "peer_average": 6.8
+        },
+        {
+          "criterion_id": 5,
+          "name": "Support & Experience",
+          "weight": 10.0,
+          "max_score": 10,
+          "score": 8.0,
+          "industry_score": 7.0,
+          "justification": "Offline heuristic: 13 of 18 indicator terms found (39 mentions) for Support & Experience.",
+          "evidence": "Support, Experience and References Support is available 8am-8pm IST on weekdays through our service desk, with P1 response within 1 hour.",
+          "evidence_verified": true,
+          "status": "OK",
+          "normalised_score_pct": 80.0,
+          "weighted_points": 8.0,
+          "benchmark_score": 8.0,
+          "gap": 0.0,
+          "relative_pct": 100.0,
+          "is_benchmark_leader": true,
+          "industry_pct": 70.0,
+          "peer_average": 7.6
+        }
+      ],
+      "strengths": [],
+      "weaknesses": [],
+      "risks": [
+        "Offline demo mode: strengths, weaknesses and risks need an AI provider."
+      ],
+      "overall_summary": "Scored by the offline keyword heuristic for demonstration only.",
+      "validation_warnings": [],
+      "evaluation_model": "OFFLINE_DEMO (keyword heuristic - no AI)",
+      "absolute_score": 63.0,
+      "ppi": 76.5873,
+      "industry_index": 53.0,
+      "final_rank": 3,
+      "rank_explanation": "Placed below NexaWorks by rule 1. Higher PPI: PPI 93.33 vs 76.59."
+    },
+    {
+      "supplier_name": "BrightPath Tech",
+      "submission_date": "2026-10-03",
+      "experience_rating": 2.0,
+      "source_file": "BrightPath_Tech_RFP_Response.pdf",
+      "document_sha256": "da2fc19e6eedc8cb012d7dba2c19b9bd8e8cf0f7a4f9239f8085724bbad68bc8",
+      "dna_fingerprint": "46ec55889a5d62b8d584ac64aac1d16327f97d91805c3bded68f8462d72b4e49",
+      "dna_reused": false,
+      "dna_origin_run": "",
+      "criteria": [
+        {
+          "criterion_id": 1,
+          "name": "Technical Capability",
+          "weight": 30.0,
+          "max_score": 10,
+          "score": 6.0,
+          "industry_score": 5.0,
+          "justification": "Offline heuristic: 7 of 18 indicator terms found (10 mentions) for Technical Capability.",
+          "evidence": "- Integration with HR systems through CSV file upload, with an API connector planned for 2027.",
+          "evidence_verified": true,
+          "status": "OK",
+          "normalised_score_pct": 60.0,
+          "weighted_points": 18.0,
+          "benchmark_score": 9.0,
+          "gap": -3.0,
+          "relative_pct": 66.6667,
+          "is_benchmark_leader": false,
+          "industry_pct": 50.0,
+          "peer_average": 7.0
+        },
+        {
+          "criterion_id": 2,
+          "name": "Implementation Plan",
+          "weight": 20.0,
+          "max_score": 10,
+          "score": 5.0,
+          "industry_score": 4.0,
+          "justification": "Offline heuristic: 3 of 18 indicator terms found (6 mentions) for Implementation Plan.",
+          "evidence": "Implementation Plan Our rapid deployment method gets customers live in 10 weeks:",
           "evidence_verified": true,
           "status": "OK",
           "normalised_score_pct": 50.0,
           "weighted_points": 10.0,
+          "benchmark_score": 9.0,
+          "gap": -4.0,
+          "relative_pct": 55.5556,
+          "is_benchmark_leader": false,
+          "industry_pct": 40.0,
+          "peer_average": 6.2
+        },
+        {
+          "criterion_id": 3,
+          "name": "Commercial Value",
+          "weight": 20.0,
+          "max_score": 10,
+          "score": 6.0,
+          "industry_score": 5.0,
+          "justification": "Offline heuristic: 6 of 18 indicator terms found (10 mentions) for Commercial Value.",
+          "evidence": "Pricing Item Cost (INR) Annual subscription (per year, up to 7,000 employees) 29,00,000 One-time implementation 14,00,000 3-year total 1,01,00,000 Support is included in the subscription.",
+          "evidence_verified": true,
+          "status": "OK",
+          "normalised_score_pct": 60.0,
+          "weighted_points": 12.0,
+          "benchmark_score": 7.0,
+          "gap": -1.0,
+          "relative_pct": 85.7143,
+          "is_benchmark_leader": false,
+          "industry_pct": 50.0,
+          "peer_average": 6.4
+        },
+        {
+          "criterion_id": 4,
+          "name": "Security & Compliance",
+          "weight": 20.0,
+          "max_score": 10,
+          "score": 6.0,
+          "industry_score": 5.0,
+          "justification": "Offline heuristic: 5 of 18 indicator terms found (10 mentions) for Security & Compliance.",
+          "evidence": "We are currently working towards ISO certification.",
+          "evidence_verified": true,
+          "status": "OK",
+          "normalised_score_pct": 60.0,
+          "weighted_points": 12.0,
           "benchmark_score": 8.0,
-          "gap": -3.0,
-          "relative_pct": 62.5,
-          "is_benchmark_leader": false
+          "gap": -2.0,
+          "relative_pct": 75.0,
+          "is_benchmark_leader": false,
+          "industry_pct": 50.0,
+          "peer_average": 6.8
         },
         {
           "criterion_id": 5,
@@ -346,142 +959,169 @@
           "weight": 10.0,
           "max_score": 10,
           "score": 7.0,
-          "justification": "Offline heuristic: 8 of 12 indicator terms found (19 mentions) for Support & Experience.",
-          "evidence": "Reference client (fictional) Industry / size Scope Contact Vardhan Pharma Pharma, 9,000 employees HR helpdesk, knowledge base, 5 sites Head of HR Operations",
+          "industry_score": 6.0,
+          "justification": "Offline heuristic: 9 of 18 indicator terms found (18 mentions) for Support & Experience.",
+          "evidence": "Implementation Plan Our rapid deployment method gets customers live in 10 weeks:",
           "evidence_verified": true,
           "status": "OK",
           "normalised_score_pct": 70.0,
           "weighted_points": 7.0,
-          "benchmark_score": 7.0,
-          "gap": 0.0,
-          "relative_pct": 100.0,
-          "is_benchmark_leader": true
+          "benchmark_score": 8.0,
+          "gap": -1.0,
+          "relative_pct": 87.5,
+          "is_benchmark_leader": false,
+          "industry_pct": 60.0,
+          "peer_average": 7.6
         }
       ],
+      "strengths": [],
+      "weaknesses": [],
       "risks": [
-        "Offline demo mode: risks are not assessed without an LLM."
+        "Offline demo mode: strengths, weaknesses and risks need an AI provider."
       ],
       "overall_summary": "Scored by the offline keyword heuristic for demonstration only.",
       "validation_warnings": [],
-      "evaluation_model": "OFFLINE_DEMO (keyword heuristic - no LLM)",
-      "from_cache": false,
-      "absolute_score": 41.0,
-      "ppi": 51.0,
-      "final_rank": 3,
-      "rank_explanation": "Placed below NexaWorks by rule 1. Higher PPI: PPI 79.64 vs 51.00."
+      "evaluation_model": "OFFLINE_DEMO (keyword heuristic - no AI)",
+      "absolute_score": 59.0,
+      "ppi": 72.004,
+      "industry_index": 49.0,
+      "final_rank": 4,
+      "rank_explanation": "Placed below Orbit Digital by rule 1. Higher PPI: PPI 76.59 vs 72.00."
     },
     {
-      "supplier_name": "BrightPath Tech",
-      "submission_date": "2026-10-03",
-      "experience_rating": 2.0,
-      "source_file": "BrightPath_Tech_RFP_Response.pdf",
-      "document_sha256": "3f6e262d8049e56efcf8061d8de2c565dc85b20fd626794843011500378de674",
+      "supplier_name": "Vertex Cloud Partners",
+      "submission_date": "2026-10-08",
+      "experience_rating": 3.0,
+      "source_file": "Vertex_Cloud_Partners_RFP_Response.pdf",
+      "document_sha256": "7a191f1f8488aeb02e6e8908301d76d94574c321df265b4501620cbe723ba642",
+      "dna_fingerprint": "4de011654f4a926cc3721ad9200c057f12d1416ee748848db01c5a41a9926f4e",
+      "dna_reused": false,
+      "dna_origin_run": "",
       "criteria": [
         {
           "criterion_id": 1,
           "name": "Technical Capability",
           "weight": 30.0,
           "max_score": 10,
-          "score": 4.0,
-          "justification": "Offline heuristic: 4 of 14 indicator terms found (6 mentions) for Technical Capability.",
-          "evidence": "- Integration with HR systems through CSV file upload, with an API connector planned for 2027.",
+          "score": 6.0,
+          "industry_score": 5.0,
+          "justification": "Offline heuristic: 6 of 18 indicator terms found (12 mentions) for Technical Capability.",
+          "evidence": "Understanding of the Requirement Kestrel wants to modernise HR service delivery for its employees with a portal, case management and integrations.",
           "evidence_verified": true,
           "status": "OK",
-          "normalised_score_pct": 40.0,
-          "weighted_points": 12.0,
-          "benchmark_score": 10.0,
-          "gap": -6.0,
-          "relative_pct": 40.0,
-          "is_benchmark_leader": false
+          "normalised_score_pct": 60.0,
+          "weighted_points": 18.0,
+          "benchmark_score": 9.0,
+          "gap": -3.0,
+          "relative_pct": 66.6667,
+          "is_benchmark_leader": false,
+          "industry_pct": 50.0,
+          "peer_average": 7.0
         },
         {
           "criterion_id": 2,
           "name": "Implementation Plan",
           "weight": 20.0,
           "max_score": 10,
-          "score": 4.0,
-          "justification": "Offline heuristic: 4 of 14 indicator terms found (7 mentions) for Implementation Plan.",
-          "evidence": "Weeks Activity 1-2 Kick-off and configuration workshops 3-7 Configuration and data upload 8-9 Testing and training 10 Go-live A project manager and two consultants will be assigned.",
+          "score": 5.0,
+          "industry_score": 4.0,
+          "justification": "Offline heuristic: 3 of 18 indicator terms found (4 mentions) for Implementation Plan.",
+          "evidence": "Implementation Plan Using our accelerated AgileX methodology we will deliver in 12 weeks: weeks 1-4 setup, weeks 5-10 build and test, weeks 11-12 go-live.",
           "evidence_verified": true,
           "status": "OK",
-          "normalised_score_pct": 40.0,
-          "weighted_points": 8.0,
-          "benchmark_score": 8.0,
+          "normalised_score_pct": 50.0,
+          "weighted_points": 10.0,
+          "benchmark_score": 9.0,
           "gap": -4.0,
-          "relative_pct": 50.0,
-          "is_benchmark_leader": false
+          "relative_pct": 55.5556,
+          "is_benchmark_leader": false,
+          "industry_pct": 40.0,
+          "peer_average": 6.2
         },
         {
           "criterion_id": 3,
           "name": "Commercial Value",
           "weight": 20.0,
           "max_score": 10,
-          "score": 5.0,
-          "justification": "Offline heuristic: 6 of 13 indicator terms found (10 mentions) for Commercial Value.",
-          "evidence": "Pricing Item Cost (INR) Annual subscription (per year, up to 7,000 employees) 29,00,000 One-time implementation 14,00,000 3-year total 1,01,00,000 Support is included in the subscription.",
+          "score": 6.0,
+          "industry_score": 5.0,
+          "justification": "Offline heuristic: 5 of 18 indicator terms found (7 mentions) for Commercial Value.",
+          "evidence": "Commercial Proposal Item Amount (INR) Platform subscription (per employee per month) 190 Implementation (indicative) To be confirmed after workshops AI add-on module Optional - priced separately Indicative three-year subscription for 6,500 employees is about INR 4.45 crore.",
           "evidence_verified": true,
           "status": "OK",
-          "normalised_score_pct": 50.0,
-          "weighted_points": 10.0,
-          "benchmark_score": 8.0,
-          "gap": -3.0,
-          "relative_pct": 62.5,
-          "is_benchmark_leader": false
+          "normalised_score_pct": 60.0,
+          "weighted_points": 12.0,
+          "benchmark_score": 7.0,
+          "gap": -1.0,
+          "relative_pct": 85.7143,
+          "is_benchmark_leader": false,
+          "industry_pct": 50.0,
+          "peer_average": 6.4
         },
         {
           "criterion_id": 4,
           "name": "Security & Compliance",
           "weight": 20.0,
           "max_score": 10,
-          "score": 3.0,
-          "justification": "Offline heuristic: 3 of 14 indicator terms found (4 mentions) for Security & Compliance.",
-          "evidence": "Understanding of Requirements We understand that Kestrel needs an employee portal, case management and a knowledge base for its employees, with connection to its HR system and login.",
+          "score": 6.0,
+          "industry_score": 5.0,
+          "justification": "Offline heuristic: 6 of 18 indicator terms found (8 mentions) for Security & Compliance.",
+          "evidence": "Security and Compliance Vertex follows enterprise-grade security standards.",
           "evidence_verified": true,
           "status": "OK",
-          "normalised_score_pct": 30.0,
-          "weighted_points": 6.0,
+          "normalised_score_pct": 60.0,
+          "weighted_points": 12.0,
           "benchmark_score": 8.0,
-          "gap": -5.0,
-          "relative_pct": 37.5,
-          "is_benchmark_leader": false
+          "gap": -2.0,
+          "relative_pct": 75.0,
+          "is_benchmark_leader": false,
+          "industry_pct": 50.0,
+          "peer_average": 6.8
         },
         {
           "criterion_id": 5,
           "name": "Support & Experience",
           "weight": 10.0,
           "max_score": 10,
-          "score": 4.0,
-          "justification": "Offline heuristic: 5 of 12 indicator terms found (9 mentions) for Support & Experience.",
-          "evidence": "Executive Summary BrightPath Tech is pleased to offer BrightDesk HR, a modern and affordable HR helpdesk and employee portal.",
+          "score": 7.0,
+          "industry_score": 6.0,
+          "justification": "Offline heuristic: 8 of 18 indicator terms found (16 mentions) for Support & Experience.",
+          "evidence": "Understanding of the Requirement Kestrel wants to modernise HR service delivery for its employees with a portal, case management and integrations.",
           "evidence_verified": true,
           "status": "OK",
-          "normalised_score_pct": 40.0,
-          "weighted_points": 4.0,
-          "benchmark_score": 7.0,
-          "gap": -3.0,
-          "relative_pct": 57.1429,
-          "is_benchmark_leader": false
+          "normalised_score_pct": 70.0,
+          "weighted_points": 7.0,
+          "benchmark_score": 8.0,
+          "gap": -1.0,
+          "relative_pct": 87.5,
+          "is_benchmark_leader": false,
+          "industry_pct": 60.0,
+          "peer_average": 7.6
         }
       ],
+      "strengths": [],
+      "weaknesses": [],
       "risks": [
-        "Offline demo mode: risks are not assessed without an LLM."
+        "Offline demo mode: strengths, weaknesses and risks need an AI provider."
       ],
       "overall_summary": "Scored by the offline keyword heuristic for demonstration only.",
       "validation_warnings": [],
-      "evaluation_model": "OFFLINE_DEMO (keyword heuristic - no LLM)",
-      "from_cache": false,
-      "absolute_score": 40.0,
-      "ppi": 47.7143,
-      "final_rank": 4,
-      "rank_explanation": "Placed below Orbit Digital by rule 1. Higher PPI: PPI 51.00 vs 47.71."
+      "evaluation_model": "OFFLINE_DEMO (keyword heuristic - no AI)",
+      "absolute_score": 59.0,
+      "ppi": 72.004,
+      "industry_index": 49.0,
+      "final_rank": 5,
+      "rank_explanation": "Placed below BrightPath Tech by rule 2. Earlier submission date: PPI tied at 72.00; submitted 2026-10-03 vs 2026-10-08."
     }
   ],
   "benchmarks": [
     {
       "criterion_id": 1,
       "name": "Technical Capability",
-      "benchmark_score": 10,
+      "benchmark_score": 9,
+      "peer_average": 7.0,
       "max_score": 10,
+      "weight": 30.0,
       "leaders": [
         "Apex Systems"
       ]
@@ -489,8 +1129,10 @@
     {
       "criterion_id": 2,
       "name": "Implementation Plan",
-      "benchmark_score": 8,
+      "benchmark_score": 9,
+      "peer_average": 6.2,
       "max_score": 10,
+      "weight": 20.0,
       "leaders": [
         "NexaWorks"
       ]
@@ -498,17 +1140,22 @@
     {
       "criterion_id": 3,
       "name": "Commercial Value",
-      "benchmark_score": 8,
+      "benchmark_score": 7,
+      "peer_average": 6.4,
       "max_score": 10,
+      "weight": 20.0,
       "leaders": [
-        "Apex Systems"
+        "Apex Systems",
+        "NexaWorks"
       ]
     },
     {
       "criterion_id": 4,
       "name": "Security & Compliance",
       "benchmark_score": 8,
+      "peer_average": 6.8,
       "max_score": 10,
+      "weight": 20.0,
       "leaders": [
         "Apex Systems",
         "NexaWorks"
@@ -517,9 +1164,13 @@
     {
       "criterion_id": 5,
       "name": "Support & Experience",
-      "benchmark_score": 7,
+      "benchmark_score": 8,
+      "peer_average": 7.6,
       "max_score": 10,
+      "weight": 10.0,
       "leaders": [
+        "Apex Systems",
+        "NexaWorks",
         "Orbit Digital"
       ]
     }
@@ -532,7 +1183,7 @@
       "lower_rank": 2,
       "deciding_rule": "1. Higher PPI",
       "is_tie_break": false,
-      "explanation": "Placed below Apex Systems by rule 1. Higher PPI: PPI 96.07 vs 79.64."
+      "explanation": "Placed below Apex Systems by rule 1. Higher PPI: PPI 95.56 vs 93.33."
     },
     {
       "upper": "NexaWorks",
@@ -541,7 +1192,7 @@
       "lower_rank": 3,
       "deciding_rule": "1. Higher PPI",
       "is_tie_break": false,
-      "explanation": "Placed below NexaWorks by rule 1. Higher PPI: PPI 79.64 vs 51.00."
+      "explanation": "Placed below NexaWorks by rule 1. Higher PPI: PPI 93.33 vs 76.59."
     },
     {
       "upper": "Orbit Digital",
@@ -550,125 +1201,159 @@
       "lower_rank": 4,
       "deciding_rule": "1. Higher PPI",
       "is_tie_break": false,
-      "explanation": "Placed below Orbit Digital by rule 1. Higher PPI: PPI 51.00 vs 47.71."
+      "explanation": "Placed below Orbit Digital by rule 1. Higher PPI: PPI 76.59 vs 72.00."
+    },
+    {
+      "upper": "BrightPath Tech",
+      "upper_rank": 4,
+      "lower": "Vertex Cloud Partners",
+      "lower_rank": 5,
+      "deciding_rule": "2. Earlier submission date",
+      "is_tie_break": true,
+      "explanation": "Placed below BrightPath Tech by rule 2. Earlier submission date: PPI tied at 72.00; submitted 2026-10-03 vs 2026-10-08."
     }
   ],
   "not_evaluated": [],
+  "overrides": [],
   "warnings": [],
   "execution_trace": [
     {
-      "time": "12:43:47",
+      "time": "04:53:57",
       "step": "2 Input",
       "actor": "Streamlit UI",
-      "detail": "4 supplier PDF(s) received"
+      "detail": "5 supplier PDF(s) received"
     },
     {
-      "time": "12:43:47",
+      "time": "04:53:57",
       "step": "1 Setup",
       "actor": "Orchestrator -> SQLite",
-      "detail": "Loaded 5 active criteria: Technical Capability (30%), Implementation Plan (20%), Commercial Value (20%), Security & Compliance (20%), Support & Experience (10%)"
+      "detail": "Template 'Kestrel - HR Service Delivery Platform (sample)' with 5 active criteria: Technical Capability (30%), Implementation Plan (20%), Commercial Value (20%), Security & Compliance (20%), Support & Experience (10%); evaluation prompt versions {'evaluation_system': 0, 'evaluation_user': 0}"
     },
     {
-      "time": "12:43:47",
+      "time": "04:53:57",
       "step": "3 Batch",
       "actor": "Orchestrator -> SQLite",
-      "detail": "Created run RFP-20261025-124347-AE9897 with 4 PENDING supplier entries"
+      "detail": "Run RFP-20261031-045357-F75912 created with 5 PENDING supplier entries"
     },
     {
-      "time": "12:43:47",
+      "time": "04:53:58",
       "step": "4 Evaluate",
       "actor": "Document Tool",
-      "detail": "Apex Systems: 2 pages, 4,792 chars via PyMuPDF"
+      "detail": "Apex Systems: 2 page(s), 4,380 characters via PyMuPDF"
     },
     {
-      "time": "12:43:47",
+      "time": "04:53:58",
       "step": "4 Evaluate",
       "actor": "Document Tool",
-      "detail": "BrightPath Tech: 2 pages, 2,607 chars via PyMuPDF"
+      "detail": "BrightPath Tech: 2 page(s), 2,392 characters via PyMuPDF"
     },
     {
-      "time": "12:43:47",
+      "time": "04:53:58",
       "step": "4 Evaluate",
       "actor": "Document Tool",
-      "detail": "NexaWorks: 2 pages, 4,553 chars via PyMuPDF"
+      "detail": "NexaWorks: 2 page(s), 4,334 characters via PyMuPDF"
     },
     {
-      "time": "12:43:47",
+      "time": "04:53:58",
       "step": "4 Evaluate",
       "actor": "Document Tool",
-      "detail": "Orbit Digital: 2 pages, 3,268 chars via PyMuPDF"
+      "detail": "Orbit Digital: 2 page(s), 2,939 characters via PyMuPDF"
     },
     {
-      "time": "12:43:47",
+      "time": "04:53:58",
       "step": "4 Evaluate",
-      "actor": "Evaluation Agent (OFFLINE_DEMO (keyword heuristic - no LLM))",
-      "detail": "Apex Systems: 1 LLM call(s)"
+      "actor": "Document Tool",
+      "detail": "Vertex Cloud Partners: 1 page(s), 2,012 characters via PyMuPDF"
     },
     {
-      "time": "12:43:47",
+      "time": "04:53:58",
       "step": "4 Evaluate",
-      "actor": "Evaluation Agent (OFFLINE_DEMO (keyword heuristic - no LLM))",
-      "detail": "BrightPath Tech: 1 LLM call(s)"
+      "actor": "Evaluation Agent (OFFLINE_DEMO (keyword heuristic - no AI))",
+      "detail": "Apex Systems: 1 AI call(s)"
     },
     {
-      "time": "12:43:47",
+      "time": "04:53:58",
       "step": "4 Evaluate",
-      "actor": "Evaluation Agent (OFFLINE_DEMO (keyword heuristic - no LLM))",
-      "detail": "NexaWorks: 1 LLM call(s)"
+      "actor": "Evaluation Agent (OFFLINE_DEMO (keyword heuristic - no AI))",
+      "detail": "BrightPath Tech: 1 AI call(s)"
     },
     {
-      "time": "12:43:47",
+      "time": "04:53:58",
       "step": "4 Evaluate",
-      "actor": "Evaluation Agent (OFFLINE_DEMO (keyword heuristic - no LLM))",
-      "detail": "Orbit Digital: 1 LLM call(s)"
+      "actor": "Evaluation Agent (OFFLINE_DEMO (keyword heuristic - no AI))",
+      "detail": "NexaWorks: 1 AI call(s)"
     },
     {
-      "time": "12:43:47",
+      "time": "04:53:58",
+      "step": "4 Evaluate",
+      "actor": "Evaluation Agent (OFFLINE_DEMO (keyword heuristic - no AI))",
+      "detail": "Orbit Digital: 1 AI call(s)"
+    },
+    {
+      "time": "04:53:58",
+      "step": "4 Evaluate",
+      "actor": "Evaluation Agent (OFFLINE_DEMO (keyword heuristic - no AI))",
+      "detail": "Vertex Cloud Partners: 1 AI call(s)"
+    },
+    {
+      "time": "04:53:58",
       "step": "5 Validate",
       "actor": "Validation Tool",
       "detail": "Apex Systems: 0 warning(s); evidence verified for 5/5 criteria"
     },
     {
-      "time": "12:43:47",
+      "time": "04:53:58",
       "step": "5 Validate",
       "actor": "Validation Tool",
       "detail": "BrightPath Tech: 0 warning(s); evidence verified for 5/5 criteria"
     },
     {
-      "time": "12:43:47",
+      "time": "04:53:58",
       "step": "5 Validate",
       "actor": "Validation Tool",
       "detail": "NexaWorks: 0 warning(s); evidence verified for 5/5 criteria"
     },
     {
-      "time": "12:43:47",
+      "time": "04:53:58",
       "step": "5 Validate",
       "actor": "Validation Tool",
       "detail": "Orbit Digital: 0 warning(s); evidence verified for 5/5 criteria"
     },
     {
-      "time": "12:43:47",
+      "time": "04:53:58",
+      "step": "5 Validate",
+      "actor": "Validation Tool",
+      "detail": "Vertex Cloud Partners: 0 warning(s); evidence verified for 5/5 criteria"
+    },
+    {
+      "time": "04:53:58",
       "step": "6 Score",
       "actor": "Ranking Tool",
-      "detail": "Absolute weighted scores calculated for every supplier"
+      "detail": "Absolute weighted scores and Industry Alignment Index calculated"
     },
     {
-      "time": "12:43:47",
+      "time": "04:53:58",
       "step": "7 Benchmark",
       "actor": "Ranking Tool",
-      "detail": "Benchmarks: Technical Capability=10 (Apex Systems); Implementation Plan=8 (NexaWorks); Commercial Value=8 (Apex Systems); Security & Compliance=8 (Apex Systems, NexaWorks); Support & Experience=7 (Orbit Digital)"
+      "detail": "Benchmarks: Technical Capability=9 (Apex Systems); Implementation Plan=9 (NexaWorks); Commercial Value=7 (Apex Systems, NexaWorks); Security & Compliance=8 (Apex Systems, NexaWorks); Support & Experience=8 (Apex Systems, NexaWorks, Orbit Digital)"
     },
     {
-      "time": "12:43:47",
+      "time": "04:53:58",
       "step": "8 Rank",
       "actor": "Ranking Tool",
-      "detail": "#1 Apex Systems (PPI 96.07) > #2 NexaWorks (PPI 79.64) > #3 Orbit Digital (PPI 51.00) > #4 BrightPath Tech (PPI 47.71)"
+      "detail": "#1 Apex Systems (PPI 95.56) > #2 NexaWorks (PPI 93.33) > #3 Orbit Digital (PPI 76.59) > #4 BrightPath Tech (PPI 72.00) > #5 Vertex Cloud Partners (PPI 72.00)"
     },
     {
-      "time": "12:43:47",
+      "time": "04:53:58",
+      "step": "8 Rank",
+      "actor": "Ranking Tool",
+      "detail": "1 tie-break(s) applied"
+    },
+    {
+      "time": "04:53:58",
       "step": "9 Persist",
       "actor": "Orchestrator -> SQLite",
-      "detail": "Saved 4 supplier result(s) under RFP-20261025-124347-AE9897"
+      "detail": "Saved 5 supplier result(s) and proposal text under RFP-20261031-045357-F75912"
     }
   ]
 }

@@ -1,249 +1,215 @@
-# Agentic RFP Evaluation and Supplier Ranking
+# AI Procurement Evaluator: Agentic RFP Evaluation and Supplier Ranking
 
-An AI-assisted Streamlit application that reads supplier RFP responses (PDF), scores each one against
-configurable criteria with evidence quoted from the document, benchmarks suppliers against their peers,
-and produces an explainable, reproducible leaderboard.
+An AI-assisted Streamlit app that turns a client's RFP into an evaluation scheme, reads every supplier proposal,
+scores it against configurable criteria with quoted evidence, benchmarks suppliers against their peers and against
+industry best practice, and produces an explainable, reproducible leaderboard.
 
-**Live app:** `<add your Streamlit Community Cloud URL here>`
-**Stack:** Streamlit · SQLite · LangGraph · any OpenAI-compatible JSON LLM (OpenRouter by default) · PyMuPDF · Pydantic
+**Live app:** `<paste your Streamlit Community Cloud URL here>`
+**How I built it:** see [`docs/Project_Approach.pdf`](docs/Project_Approach.pdf)
 
-> **Design principle:** the LLM judges proposal *content*. It never does the arithmetic, the benchmarks,
-> the tie-breaks or the ranking. Those are deterministic Python, so once the scorecards are validated,
-> the same inputs always produce the same numbers and the same order. Every final score traces back
-> to a criterion, a weight, a verified evidence quote and a business rule.
+**Stack:** Streamlit · SQLite · LangGraph · any OpenAI-compatible JSON LLM (Cohere by default; OpenRouter, OpenAI and
+Groq also supported) · PyMuPDF / pypdf · Pydantic · ReportLab · Altair
+
+> **Design principle: AI reads, code decides.** The LLM judges proposal *content*. It never computes the arithmetic,
+> benchmarks, tie-breaks or ranks. Those are deterministic Python, so once the scorecards are validated, the same
+> inputs always produce the same numbers and order. Every score traces back to a criterion, a weight, a quote
+> verified in the PDF, and a business rule.
 
 ---
 
-## 1. Business problem
+## 1. What it does (the user journey)
 
-A procurement team receives several supplier proposals for the same RFP. Reading them all and comparing
-them consistently is slow and subjective. This app gives every proposal the same independent,
-evidence-based review, then applies transparent scoring, peer comparison and tie-break rules.
+| Step | Page | What happens |
+|---|---|---|
+| 0 | Sidebar | Choose an AI provider and paste an API key. The key stays in the browser session only; it is never written to disk or GitHub. *Offline demo* mode runs everything without a key. |
+| 1 | **RFP templates** | Pick a saved template, or upload the client's RFP. The **Template Agent** drafts the criteria, weights, maximum scores and an **industry best-practice benchmark** for each criterion. The analyst reviews and saves. |
+| 2 | **Criteria & prompt** | Edit criteria and weights (active weights must total 100%). Edit the **AI prompt**; every edit is saved as a new version, can be rolled back, and the full rendered prompt can be previewed. |
+| 3 | **Evaluate** | Upload any number of supplier PDFs, enter supplier name, submission date and experience rating, and run. The LangGraph workflow shows each agent step live. |
+| 4 | **Results** | Leaderboard · Peer benchmark · Industry benchmark · Scorecards (evidence, strengths, weaknesses, risks) · Compare two suppliers · Adjust scores (analyst override with reason and audit log) · Run details and export (PDF report, JSON, CSV). |
+| 5 | **Ask the proposals** | RAG question answering across the proposals of a run, with citations to supplier and page. |
+| 6 | **History & DNA** | Every past run can be reopened. The **evaluation DNA** library shows stored fingerprints and how many AI calls were saved by reusing them. |
 
-The sample RFP (fictional) is *KML/HR/2026/014: HR Service Delivery Platform* for Kestrel Manufacturing,
-a 6,500-employee manufacturer that needs an employee portal, HR case management and SuccessFactors integration.
+Two fictional procurement exercises ship with the app: an **HR service delivery platform** RFP (Kestrel
+Manufacturing) with 5 supplier proposals, and a **corporate fleet lease** RFQ (Meridian Healthcare) with 3 quotes.
+The second one shows the app is not tied to one domain: its criteria (cost of lease, vehicle safety, service network,
+delivery, sustainability) come from that RFQ.
 
 ## 2. Architecture
 
 ```mermaid
 flowchart LR
-    UI[Streamlit UI] -->|PDFs + supplier metadata| ORCH
-    subgraph ORCH[Orchestrator Agent: LangGraph state machine]
-        A[load_criteria] --> B[create_batch] --> C[extract_documents]
-        C -->|no readable PDFs| F[fail_run]
-        C -->|ok| D[evaluate_suppliers] --> E[validate_scorecards] --> G[rank_suppliers] --> H[persist_results]
+    UI[Streamlit UI<br/>7 pages] -->|template + PDFs + metadata| ORCH
+    subgraph ORCH[Orchestrator Agent - LangGraph]
+        A[load_template] --> B[create_batch] --> C[extract_documents]
+        C -->|none readable| F[fail_run]
+        C --> D[evaluate_suppliers] --> E[validate_scorecards] --> G[rank_suppliers] --> H[persist_results]
     end
-    A <-->|active criteria| DB[(SQLite)]
+    T[Template Agent<br/>RFP -> criteria] --> DB
+    A <--> DB[(SQLite)]
     C --> DT[Document Tool<br/>PyMuPDF / pypdf]
-    D --> EA[Evaluation Agent<br/>LLM, JSON mode, temp 0]
+    D <--> DNA[(Evaluation DNA)]
+    D --> EA[Evaluation Agent<br/>LLM, JSON, temp 0]
     E --> VT[Validation Tool<br/>Pydantic + evidence check]
     G --> RT[Ranking Tool<br/>deterministic Python]
     H --> DB
-    H --> UI
+    DB --> Q[RAG Tool<br/>BM25 + LLM answer]
+    DB --> R[Report Tool<br/>PDF]
 ```
 
 | Component | File | Responsibility |
 |---|---|---|
-| Orchestrator Agent | `rfp/orchestrator.py` | LangGraph `StateGraph` that calls each tool in order, routes around failures (conditional edge), and records an execution trace |
-| Document Tool | `rfp/document_tool.py` | Extracts and cleans PDF text (PyMuPDF, with pypdf as fallback); rejects empty, scanned, encrypted or non-PDF files with a clear reason |
-| Evaluation Agent | `rfp/evaluation_agent.py` | Builds an evidence-grounded prompt from the **current** criteria, calls the LLM in JSON mode at temperature 0, retries once with a repair prompt if the JSON is invalid, and caches results |
-| Validation Tool | `rfp/validation_tool.py` | Parses JSON (even if wrapped in prose or markdown), validates the schema with Pydantic, fills missing criteria, clips out-of-range scores, drops unknown criteria, **checks every evidence quote actually appears in the PDF**, and validates supplier metadata |
-| Ranking Tool | `rfp/ranking_tool.py` | Absolute score, benchmarks, gaps, relative %, PPI, the mandatory tie-break sort, sequential ranks and a plain-English explanation of every position |
-| Persistence | `rfp/db.py` | SQLite schema, seed criteria, runs, supplier results, per-criterion audit rows, LLM cache |
-| UI | `app.py` | Criteria editor, supplier input, leaderboard, scorecards, run details, history, JSON download |
-
-### Data flow (10 steps from the brief)
-
-1. **Setup**: Streamlit starts; the database is created and seeded if needed; active criteria are shown.
-2. **Input**: upload supplier PDFs (or click *Load the 4 sample supplier PDFs*) and enter name, submission date and experience rating (1-5).
-3. **Batch**: a unique `RFP_RUN_ID` (e.g. `RFP-20261025-080855-F74480`) is generated, with a `RUNNING` run row and one `PENDING` supplier entry per uploaded document.
-4. **Evaluate**: criteria are **reloaded from SQLite at run time**, text is extracted, the prompt is built and the LLM is called (suppliers in parallel, results re-ordered deterministically).
-5. **Validate**: JSON is parsed and every criterion normalised; warnings are recorded.
-6. **Score**: absolute weighted score per supplier.
-7. **Benchmark**: best score per criterion, gaps and relative %.
-8. **Rank**: PPI, the tie-break sort, ranks 1..n.
-9. **Persist**: the complete result is written in one transaction under one `RFP_RUN_ID`.
-10. **Present**: leaderboard, scorecards with evidence, comparisons, warnings, tie-break explanation, JSON download.
+| Orchestrator Agent | `rfp/orchestrator.py` | LangGraph state machine; calls each tool in order, routes around failures, records an execution trace; `rescore_run` re-ranks after overrides with no AI call |
+| Template Agent | `rfp/template_agent.py` | Reads the client RFP and drafts criteria, weights and industry benchmarks (LLM, or a rules-based parser offline); weights normalised to 100 |
+| Document Tool | `rfp/document_tool.py` | PDF to clean text; strips repeated headers and footers; rejects empty, non-PDF, corrupt or scanned files with a reason |
+| Evaluation Agent | `rfp/evaluation_agent.py` | Builds the prompt from the versioned prompt, template context and current criteria; JSON mode; temperature 0; one repair retry |
+| Validation Tool | `rfp/validation_tool.py` | Parses JSON (even if wrapped in prose); Pydantic schema; fixes missing, out-of-range or non-numeric scores; checks every evidence quote against the PDF |
+| Ranking Tool | `rfp/ranking_tool.py` | Absolute score, benchmarks, gaps, relative %, PPI, Industry Alignment Index, tie-breaks, ranks, explanations, overrides |
+| RAG Tool | `rfp/rag_tool.py` | Chunking with page numbers, BM25 retrieval per supplier, cited LLM answer |
+| Report Tool | `rfp/report_tool.py` | One-click PDF evaluation report |
+| LLM client | `rfp/llm_client.py` | One OpenAI-compatible client for Cohere, OpenRouter, OpenAI and Groq; plain-English error messages |
+| Prompts | `rfp/prompts.py` | Default prompts and placeholder validation |
+| Persistence | `rfp/db.py` | SQLite schema and all reads and writes |
+| UI | `app.py`, `ui/*.py` | Multi-page Streamlit app |
 
 ## 3. Scoring formulas
 
 | Metric | Formula |
 |---|---|
-| Absolute weighted score | Σ (criterion score ÷ max score) × criterion weight, giving 0-100 |
-| Criterion benchmark | highest validated score for that criterion across all evaluated suppliers |
+| Absolute weighted score | Σ (score ÷ max score) × weight → 0-100 |
+| Criterion benchmark | highest validated score for the criterion among evaluated suppliers |
 | Criterion gap | supplier score − benchmark (0 for the leader, otherwise negative) |
-| Relative performance % | supplier score ÷ benchmark × 100 |
-| Peer Performance Index (PPI) | Σ (relative % × weight) ÷ Σ weights |
+| Relative performance % | supplier score ÷ benchmark × 100; if the benchmark is 0, relative % = 0 for everyone, with a warning |
+| **Peer Performance Index (PPI)** | Σ (relative % × weight) ÷ Σ weights; **used for ranking** |
+| Industry Alignment Index | Σ (industry score ÷ max score) × weight → 0-100; shown alongside, not used for ranking |
 
-**Zero benchmark (safe handling):** if no supplier scores above 0 on a criterion, every supplier's relative %
-for it is set to 0 and a warning is recorded. The criterion cannot tell suppliers apart, so it adds nothing
-to anyone's PPI, and nobody gets credit for "matching" a benchmark of zero.
+**Mandatory tie-break order:** 1) higher PPI, 2) earlier submission date, 3) higher experience rating,
+4) supplier name A-Z. This is one stable sort, after which ranks 1..n are assigned. Scores are rounded to 4 decimals
+before sorting so floating-point noise can never change the order. Every adjacent pair gets a written explanation.
 
-**Mandatory tie-break order:** 1) higher PPI, 2) earlier submission date, 3) higher historical experience rating,
-4) supplier name A-Z (case-insensitive). This is one stable sort; ranks 1, 2, 3… are assigned only afterwards,
-so ranks are never shared. Scores are rounded to 4 decimals before sorting so floating-point noise cannot change the order.
+**Worked example** (Technical 60%, Commercial 40%): A scores 8 and 5, B scores 4 and 10. Absolute: A = 48 + 20 = 68,
+B = 24 + 40 = 64. Benchmarks: 8 and 10. Relative %: A = 100 and 50, B = 50 and 100. PPI: A = (100×60 + 50×40)/100 = 80,
+B = 70. A ranks first. This is a unit test.
 
-**Worked example** (two criteria: Technical 60%, Commercial 40%):
+## 4. Validation rules
 
-| | Technical | Commercial | Absolute | Relative % | PPI |
-|---|---|---|---|---|---|
-| A | 8 | 5 | 8/10×60 + 5/10×40 = **68** | 100, 50 | (100×60 + 50×40)/100 = **80** |
-| B | 4 | 10 | 24 + 40 = **64** | 50, 100 | (50×60 + 100×40)/100 = **70** |
-
-Benchmarks are Technical = 8 (A) and Commercial = 10 (B). A ranks first. This exact case is a unit test.
-
-## 4. Validation and normalisation rules
-
-| LLM output problem | Action |
+| Problem | Action |
 |---|---|
-| Not valid JSON | One automatic repair request; if still invalid, all criteria are scored 0 with a warning |
-| JSON wrapped in prose or ```` ``` ```` fences, or with trailing commas | JSON extracted, with a warning |
-| Criterion missing | Score 0 ("no evidence, no points") and a warning |
-| Score non-numeric (e.g. `"eight"`) | 0 and a warning |
-| Score out of range (e.g. 14/10, -3) | Clipped to 0..max and a warning |
-| Decimal score | Rounded and a warning |
-| Unknown or duplicate `criterion_id` | Dropped, or first kept, with a warning (matched by name if the id is missing) |
-| Wrong `max_score` | Database value used |
-| Evidence quote not found in the PDF | Flagged ⚠ *not verified*, with a warning (catches invented quotes) |
-| Missing justification | "Not provided" and a warning |
-| Two suppliers upload the identical PDF | Evaluated once, scorecard shared, duplicate-submission warning |
+| AI reply is not valid JSON | One automatic repair request; if still invalid, all criteria score 0 with a warning |
+| JSON wrapped in prose or markdown, trailing commas | Extracted, with a warning |
+| Criterion missing | 0 ("no evidence, no points"), with a warning |
+| Non-numeric score ("eight") | 0, with a warning |
+| Out of range (14/10, −3) | Clipped to 0..max, with a warning |
+| Decimal score | Rounded, with a warning |
+| Unknown or duplicate criterion | Dropped, or first kept; matched by name if the id is missing |
+| Wrong max score | Database value used |
+| **Evidence quote not found in the PDF** | Flagged "⚠ not found", with a warning (catches invented quotes) |
+| Identical PDF uploaded twice | Evaluated once, scorecard shared, duplicate-submission warning |
+| Bad files (scanned, corrupt, not a PDF) | Skipped with a reason; the run continues for the others |
+| Supplier metadata | Name required and unique; date valid and not in the future; rating 1-5 (blocks the run) |
+| Criteria | Active weights total 100; 2-10 active criteria; unique names (blocks the run) |
+| Prompt edits | Required placeholders present, no unknown ones, braces balanced (blocks the save) |
 
-**Supplier metadata checks** (these block the run): name required and unique; submission date valid and not in the
-future; experience rating between 1 and 5. **Criteria checks** (these also block the run): active weights must total 100%, names unique, max score > 0.
-**File checks** (the file is skipped, the run continues): empty, not a PDF, corrupt, encrypted, or scanned with no text layer.
+## 5. Evaluation DNA (fingerprint reuse)
 
-## 5. Database design (SQLite)
+Each scorecard is stored under a **fingerprint** = SHA-256 of (model + document SHA-256 + criteria hash + prompt hash).
+If the same fingerprint appears again, the stored scorecard is reused: the same proposal always gets the same
+evaluation, and no AI call or cost is spent. Changing the document, any criterion, the prompt or the model produces a
+new fingerprint and a fresh evaluation. DNA can be switched off per run, and the library can be cleared.
 
-| Table | Fields |
+## 6. Database (SQLite)
+
+| Table | Purpose |
 |---|---|
-| `evaluation_criteria` | criterion_id, name, description, weight, max_score, is_active, updated_at |
-| `rfp_runs` | rfp_run_id, created_at, status (RUNNING/COMPLETED/FAILED), rfp_title, evaluation_mode, criteria_snapshot, warnings_json, run_json |
-| `supplier_results` | rfp_run_id, supplier_name, submission_date, experience_rating, absolute_score, ppi, final_rank, status (PENDING → RANKED / NOT_EVALUATED), result_json |
-| `criterion_scores` | one row per supplier × criterion: score, benchmark, gap, relative %, weighted points, justification, evidence, evidence_verified *(audit trail)* |
-| `llm_cache` | hash of (prompt version, model, document SHA-256, criteria) → LLM reply *(reproducibility, cost control: the same document always gets the same scorecard)* |
+| `rfp_templates` | Client RFP templates: buyer, industry, summary, requirements, source file hash and text |
+| `evaluation_criteria` | criterion_id, template_id, name, description, industry_benchmark, weight, max_score, is_active |
+| `prompt_versions` | Versioned, analyst-editable prompts (one active per prompt) |
+| `rfp_runs` | rfp_run_id, created_at, status, template, engine, criteria and prompt snapshot, warnings, full result, revision |
+| `supplier_results` | rfp_run_id, supplier_name, submission_date, experience_rating, absolute_score, ppi, industry_index, final_rank, status, result_json |
+| `criterion_scores` | One row per supplier × criterion: score, industry score, benchmark, gap, relative %, evidence, verification, override flag |
+| `run_documents` | Extracted proposal text per run, used for Q&A and audit |
+| `evaluation_dna` | Fingerprint → stored AI scorecard, first run, reuse count |
+| `score_overrides` | Analyst overrides: old and new score, reason, analyst, time |
 
-Criteria are edited in the **Criteria** tab without code changes. Deleted criteria are deactivated rather than
-removed, so past runs stay auditable, and each run stores a snapshot of the criteria it used.
+## 7. Running it on Windows (no coding needed)
 
-## 6. Prompt design
+1. Install **Python 3.12** from python.org, ticking **"Add python.exe to PATH"**.
+2. Unzip this project, open the folder and **double-click `run_app.bat`**. The first run sets everything up (2-5
+   minutes); your browser then opens at http://localhost:8501.
+3. In the sidebar choose **Cohere**, paste your trial key (dashboard.cohere.com → API Keys) and click **Connect**,
+   or choose **Offline demo**.
+4. Double-click **`run_tests.bat`** to run the 37 automated tests.
 
-The system prompt tells the model to:
-- use **only evidence present in the supplier document**;
-- return **one result for every active criterion** (listed with id, max score, weight and description);
-- keep every score **within 0..max_score** (with a scoring guide);
-- give a **verbatim quote** of 40 words or fewer as evidence, or an empty string if there is none;
-- output **JSON only**.
+Manual alternative (any OS): `python -m venv .venv` → activate it → `pip install -r requirements-dev.txt` →
+`streamlit run app.py`.
 
-The supplier text is fenced between `DOCUMENT_START` and `DOCUMENT_END` markers. JSON mode (`response_format=json_object`) and
-temperature 0 are used where the provider supports them.
+## 8. Deploying on Streamlit Community Cloud
 
-## 7. Synthetic supplier proposals
+1. Push this folder to a public GitHub repository, with `app.py` at the top level.
+2. share.streamlit.io → **Create app** → your repo, branch `main`, main file `app.py`; Advanced settings → Python 3.12.
+3. **Deploy.** No secrets are needed: users paste their own key in the app.
 
-`sample_data/supplier_pdfs/` contains four fictional 2-page proposals for the same RFP, generated by
-`scripts/make_sample_pdfs.py`:
+Streamlit Community Cloud storage is temporary, so run history resets when the app restarts or redeploys.
+Production would use a managed database with the same schema.
 
-| Supplier | Profile built into the document | Price (3-yr, ex-GST) | Timeline |
-|---|---|---|---|
-| Apex Systems | Strongest technical design and security (ISO 27001, SOC 2 Type II, 99.95% SLA); highest price | INR 2.48 Cr | 18 weeks |
-| BrightPath Tech | Lowest price and fastest; vague security ("working towards ISO"), CSV-only integration, 3 small clients, no references | INR 1.01 Cr | 10 weeks |
-| NexaWorks | Balanced; most detailed plan (phases, exit criteria, named team, risk register) and strongest support (24x7, service credits) | INR 1.62 Cr | 16 weeks |
-| Orbit Digital | Strongest experience (17 years, 40+ implementations, 3 named references); integration "to be finalised after discovery"; integration cost excluded | INR 1.61 Cr (estimate) | ~20 weeks |
+## 9. Demo script (4-5 minutes)
 
-`sample_data/edge_cases/` holds a scanned (image-only) PDF and a corrupt "PDF" to demonstrate file validation.
-All names, prices and references are invented. No real supplier data is used.
+1. **Home:** the five-step journey and the design principle.
+2. **Sidebar:** choose Cohere, paste the key, click Connect (the key is never stored).
+3. **RFP templates → Create from a client RFP → Use sample: HR service delivery platform → Read RFP and draft
+   criteria.** Show the drafted criteria, weights and industry benchmarks; save.
+4. **Criteria & prompt:** the weights chart; the prompt editor, version history and full prompt preview.
+5. **Evaluate:** load the 5 sample proposals, then Evaluate. Narrate the agent steps.
+6. **Results:** leaderboard, peer heatmap, industry view, one scorecard (✔ verified quotes, strengths and risks),
+   compare two suppliers, then download the PDF report.
+7. **Adjust scores:** change one score with a reason and show the re-rank and the audit log.
+8. **Ask the proposals:** "Which suppliers hold ISO 27001 or SOC 2 certification?", with citations.
+9. **Error case:** Evaluate → Testing tools: type `BrightPath Tech`, click *Add bad files* and *Add tie-break test
+   file*, then Evaluate. Run details shows the clipped, non-numeric, missing and invented-quote warnings, the
+   scanned and corrupt PDFs skipped, the duplicate flagged, and rule 3 breaking the tie.
+10. **Evaluate the same 5 again:** "5 reused from evaluation DNA", then History & DNA shows AI calls saved.
 
-## 8. Setup and running locally
+## 10. Testing
 
-```bash
-git clone <your-repo-url> && cd rfp-evaluator
-python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
-pip install -r requirements-dev.txt
-python scripts/seed_db.py            # creates data/rfp_evaluator.db with the 5 sample criteria (optional: app does this too)
-cp .streamlit/secrets.toml.example .streamlit/secrets.toml   # then paste your OpenRouter key
-streamlit run app.py
-```
+`pytest`: **37 tests** covering hand-checked formulas, all four tie-break rules, zero benchmark, input-order
+independence, overrides, every validation rule, evidence checking, prompt placeholder checks and versioning, the
+template parser on both sample RFPs, LLM-based template drafting (fake API), JSON-repair retry, friendly API errors,
+DNA reuse and invalidation, duplicate documents, bad files, a fully failed run, RAG retrieval, the PDF report, and
+an end-to-end run for both domains.
 
-- Get a key at https://openrouter.ai (OpenAI and Groq keys also work; pick the provider in the sidebar).
-- Default model: `openai/gpt-4o-mini`. Change it in the sidebar or with `LLM_MODEL` in secrets.
-- **Offline demo mode** (sidebar) runs the full workflow without a key, using a transparent keyword heuristic
-  in place of the LLM. It is clearly labelled and meant only for demos and automated tests.
+## 11. Assumptions and limitations
 
-Run the tests: `pytest` (26 tests: formulas, tie-breaks, zero benchmark, validation and repair, evidence checking,
-LLM retry and cache with a fake client, end-to-end workflow, bad files, duplicate documents, batch statuses).
-
-## 9. Deploying on Streamlit Community Cloud
-
-1. Push this folder to a **public GitHub repository**.
-2. Go to https://share.streamlit.io and choose **Create app → Deploy a public app from GitHub**.
-3. Repository: your repo; Branch: `main`; Main file path: `app.py`. Under *Advanced settings*, pick Python 3.12.
-4. In *Advanced settings → Secrets*, paste `OPENROUTER_API_KEY = "sk-or-v1-..."`.
-5. Click **Deploy**. The SQLite database is created automatically on first start.
-
-Note: Streamlit Community Cloud storage is temporary, so run history resets when the app restarts. That is fine for a
-demo; production would use a managed database (e.g. Postgres) with the same schema.
-
-## 10. Demonstration script (3-4 minutes)
-
-1. **Criteria tab**: show the 5 criteria and weights stored in SQLite. Change a weight to show the 100% check blocking evaluation, then change it back.
-2. **Evaluate tab**: click *Load the 4 sample supplier PDFs*, show the metadata table, click **Evaluate**, and narrate the agent steps as they appear.
-3. **Leaderboard**: rank, absolute score vs PPI, the "why this position" column and the relative-performance heatmap.
-4. **Scorecards**: open one supplier and show score, benchmark, gap, relative %, the evidence quote with ✔ verified, and the justification.
-5. **Run details**: RFP_RUN_ID, tie-break table, benchmarks, execution trace, **Download JSON**.
-6. **Validation case**: in *Testing tools*, type `BrightPath Tech` in the simulate box and click *Load bad files*, then re-run. Show
-   the clipped (14 → 10), non-numeric, missing and invented-evidence warnings, plus the scanned and corrupt PDFs skipped
-   with reasons. The run still completes for the valid suppliers.
-7. **Tie-break case**: in *Testing tools*, click *Add tie-break test file*. This adds an identical copy of the NexaWorks
-   proposal as "NexaWorks Twin" with the same submission date and a lower experience rating. Re-run it: both get the same PPI,
-   and the tie-break table shows rule *3. Higher experience rating* deciding the order, plus a duplicate-submission warning.
-
-## 11. Assumptions
-
-- Scores are integers from 0 to each criterion's `max_score` (10 by default); weights are percentages of active criteria and total 100.
-- A criterion with no result from the LLM scores 0, to stay conservative and auditable.
-- Historical experience rating is entered by the procurement user on a 1-5 scale.
-- Ranking uses PPI (relative to peers), as the brief requires. Absolute score is shown alongside because it can disagree (see the `test_absolute_and_ppi_can_disagree` test).
-- Proposal text beyond 30,000 characters is truncated with a warning; proposals under 200 readable characters are treated as unreadable.
-- Scanned PDFs are rejected rather than OCR'd. OCR (e.g. Tesseract or Azure Document Intelligence) is a natural extension.
-- The LLM recommendation supports a human procurement decision; it does not replace one.
+- Scores are integers from 0 to max (10 by default); active weights total 100.
+- A criterion the AI does not return scores 0 (conservative and auditable).
+- The experience rating (1-5) is entered by the analyst and is used only as a tie-breaker.
+- Ranking uses PPI, as the brief requires; the absolute score and industry alignment are shown alongside.
+- Proposal text beyond 30,000 characters is truncated with a warning. Scanned PDFs are rejected; OCR would be a
+  natural next step.
+- Q&A uses BM25 keyword retrieval (exact on terms like "ISO 27001"; no embedding model to host).
+- The evaluation supports a human procurement decision; it does not replace one.
 
 ## 12. Repository structure
 
 ```
 rfp-evaluator/
-├── app.py                         # Streamlit UI
-├── rfp/
-│   ├── config.py                  # settings, providers, constants
-│   ├── db.py                      # SQLite schema, seed, CRUD, cache
-│   ├── document_tool.py           # PDF text extraction
-│   ├── evaluation_agent.py        # prompt, LLM call, repair retry, cache, offline evaluator
-│   ├── validation_tool.py         # JSON parsing, Pydantic, normalisation, evidence check
-│   ├── ranking_tool.py            # formulas, benchmarks, PPI, tie-breaks
-│   └── orchestrator.py            # LangGraph workflow + execution trace
-├── scripts/
-│   ├── seed_db.py                 # create/seed database (--reset)
-│   ├── make_sample_pdfs.py        # generate the 4 synthetic proposals + edge cases
-│   └── export_sample_run.py       # produce a sample JSON export
-├── sample_data/                   # synthetic supplier PDFs, edge cases, sample metadata
-├── sample_output/                 # sample exported JSON
-├── tests/                         # pytest suite
-├── docs/screenshots/
-├── .streamlit/config.toml         # theme + upload limit
-├── .streamlit/secrets.toml.example
+├── app.py                     # entry point and navigation
+├── ui/                        # one file per page + shared helpers
+├── rfp/                       # agents and tools (no Streamlit code)
+├── scripts/                   # seed_db.py, make_sample_pdfs.py, export_sample_run.py
+├── sample_data/               # templates/, proposals/, edge_cases/, sample_metadata.json
+├── sample_output/             # sample exported JSON
+├── tests/                     # pytest suite
+├── docs/                      # Project_Approach.pdf, screenshots/
+├── run_app.bat / run_tests.bat
 ├── requirements.txt / requirements-dev.txt
-└── README.md
+└── .streamlit/config.toml
 ```
 
 ## 13. Screenshots
 
 | | |
 |---|---|
-| ![Criteria](docs/screenshots/01_criteria.png) | ![Supplier input](docs/screenshots/02_supplier_input.png) |
-| ![Leaderboard](docs/screenshots/03_leaderboard.png) | ![Scorecard](docs/screenshots/04_scorecard.png) |
-| ![Run details](docs/screenshots/05_run_details.png) | ![Validation case](docs/screenshots/06_validation_case.png) |
-| ![Tie-break case](docs/screenshots/07_tie_break.png) | |
-
-## 14. Possible extensions
-
-OCR for scanned proposals · a second "challenger" LLM or self-consistency voting for borderline scores ·
-human override of a criterion score with a reason, logged for audit · LangSmith tracing and a golden-set
-evaluation of scoring accuracy · role-based access and Postgres for production.
+| ![Home](docs/screenshots/01_home.png) | ![Template from RFP](docs/screenshots/02_template_from_rfp.png) |
+| ![Prompt editor](docs/screenshots/04_prompt_editor.png) | ![Evaluate](docs/screenshots/05_evaluate.png) |
+| ![Leaderboard](docs/screenshots/07_leaderboard.png) | ![Peer benchmark](docs/screenshots/08_peer_benchmark.png) |
+| ![Scorecard](docs/screenshots/10_scorecard.png) | ![Compare](docs/screenshots/11_compare.png) |
+| ![Ask the proposals](docs/screenshots/14_ask.png) | ![Validation and tie-break](docs/screenshots/15_validation_and_tiebreak.png) |

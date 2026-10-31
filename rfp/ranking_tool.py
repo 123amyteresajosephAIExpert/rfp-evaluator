@@ -14,6 +14,9 @@ relative performance %  = supplier score / benchmark x 100
                           the criterion cannot differentiate suppliers, so it contributes
                           nothing to anyone's PPI and a warning is recorded
 Peer Performance Index  = sum(relative % x weight) / sum(weights)
+Industry Alignment Index = sum((industry score / max score) x weight) -> 0..100
+                          how close the proposal is to industry best practice
+                          (shown alongside; ranking stays on PPI as the brief requires)
 
 Mandatory tie-break order
 -------------------------
@@ -77,7 +80,8 @@ def compute_rankings(suppliers: list[dict], criteria: list[dict]) -> dict:
         best = max(score for score, _ in scores)
         leaders = sorted(name for score, name in scores if score == best)
         benchmarks[cid] = {"criterion_id": cid, "name": c["name"], "benchmark_score": best,
-                           "max_score": c["max_score"], "leaders": leaders}
+                           "peer_average": _r(sum(sc for sc, _ in scores) / len(scores)),
+                           "max_score": c["max_score"], "weight": float(c["weight"]), "leaders": leaders}
         if best == 0:
             warnings.append(f"No supplier scored above 0 on '{c['name']}'; relative performance set to 0% "
                             "for all suppliers (criterion does not differentiate).")
@@ -87,16 +91,19 @@ def compute_rankings(suppliers: list[dict], criteria: list[dict]) -> dict:
     for s in suppliers:
         absolute = 0.0
         ppi_num = 0.0
+        industry = 0.0
         rows = []
         for c in criteria:
             cid, weight, max_score = c["criterion_id"], float(c["weight"]), int(c["max_score"])
             item = next((x for x in s["criteria"] if x["criterion_id"] == cid), None)
             score = float(item["score"]) if item else 0.0
+            ind_score = float(item.get("industry_score", score)) if item else 0.0
             bench = float(benchmarks[cid]["benchmark_score"])
             weighted_points = score / max_score * weight
             relative = (score / bench * 100.0) if bench > 0 else 0.0
             absolute += weighted_points
             ppi_num += relative * weight
+            industry += ind_score / max_score * weight
             row = dict(item) if item else {"criterion_id": cid, "justification": "", "evidence": "",
                                            "evidence_verified": False, "status": "MISSING"}
             row.update({
@@ -107,12 +114,16 @@ def compute_rankings(suppliers: list[dict], criteria: list[dict]) -> dict:
                 "gap": _r(score - bench),
                 "relative_pct": _r(relative),
                 "is_benchmark_leader": bench > 0 and score == bench,
+                "industry_score": ind_score,
+                "industry_pct": _r(ind_score / max_score * 100),
+                "peer_average": benchmarks[cid]["peer_average"],
             })
             rows.append(row)
         out = dict(s)
         out["criteria"] = rows
         out["absolute_score"] = _r(absolute)
         out["ppi"] = _r(ppi_num / total_weight)
+        out["industry_index"] = _r(industry * 100 / total_weight)
         out["experience_rating"] = float(s["experience_rating"])
         out["submission_date"] = _as_date(s["submission_date"]).isoformat()
         ranked.append(out)
@@ -159,3 +170,21 @@ def explain_pair(upper: dict, lower: dict) -> dict:
         "is_tie_break": not rule.startswith("1."),
         "explanation": f"Placed below {u['supplier_name']} by rule {rule}: {text}.",
     }
+
+
+def apply_overrides(scorecards: list[dict], overrides: list[dict]) -> list[dict]:
+    """Return copies of the scorecards with analyst overrides applied (latest override wins)."""
+    import copy
+
+    cards = copy.deepcopy(scorecards)
+    for o in overrides:
+        for s in cards:
+            if s["supplier_name"] != o["supplier_name"]:
+                continue
+            for c in s["criteria"]:
+                if c["criterion_id"] == o["criterion_id"]:
+                    c["original_score"] = c.get("original_score", c["score"])
+                    c["score"] = float(o["new_score"])
+                    c["overridden"] = True
+                    c["override_reason"] = o["reason"]
+    return cards

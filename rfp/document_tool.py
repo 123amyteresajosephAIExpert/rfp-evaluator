@@ -38,6 +38,19 @@ def _clean(text: str) -> str:
     return text.strip()
 
 
+def _strip_repeated_lines(pages: list[str]) -> list[str]:
+    """Remove running headers/footers: lines that repeat on most pages (digits ignored)."""
+    if len(pages) < 2:
+        return [re.sub(r"(?im)^\s*page \d+( of \d+)?\s*$", "", p) for p in pages]
+    key = lambda ln: re.sub(r"\d+", "#", ln.strip().lower())
+    counts: dict[str, int] = {}
+    for p in pages:
+        for k in {key(ln) for ln in p.splitlines() if ln.strip()}:
+            counts[k] = counts.get(k, 0) + 1
+    repeated = {k for k, n in counts.items() if n >= max(2, int(0.6 * len(pages))) and len(k) < 160}
+    return ["\n".join(ln for ln in p.splitlines() if key(ln) not in repeated) for p in pages]
+
+
 def _extract_pymupdf(data: bytes) -> tuple[str, int]:
     try:
         import pymupdf
@@ -45,16 +58,16 @@ def _extract_pymupdf(data: bytes) -> tuple[str, int]:
         import fitz as pymupdf
 
     with pymupdf.open(stream=data, filetype="pdf") as doc:
-        pages = [f"[Page {i + 1}]\n{page.get_text('text')}" for i, page in enumerate(doc)]
-        return "\n".join(pages), len(pages)
+        pages = _strip_repeated_lines([page.get_text("text") for page in doc])
+        return "\n".join(f"[Page {i + 1}]\n{t}" for i, t in enumerate(pages)), len(pages)
 
 
 def _extract_pypdf(data: bytes) -> tuple[str, int]:
     from pypdf import PdfReader
 
     reader = PdfReader(io.BytesIO(data))
-    pages = [f"[Page {i + 1}]\n{p.extract_text() or ''}" for i, p in enumerate(reader.pages)]
-    return "\n".join(pages), len(pages)
+    pages = _strip_repeated_lines([p.extract_text() or "" for p in reader.pages])
+    return "\n".join(f"[Page {i + 1}]\n{t}" for i, t in enumerate(pages)), len(pages)
 
 
 def extract_pdf_text(data: bytes, filename: str = "document.pdf") -> ExtractionResult:

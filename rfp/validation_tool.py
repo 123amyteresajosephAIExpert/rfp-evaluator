@@ -47,6 +47,7 @@ class RawCriterionResult(BaseModel):
     criterion_name: Any = None
     name: Any = None
     score: Any = None
+    industry_score: Any = None
     max_score: Any = None
     justification: Any = ""
     evidence: Any = ""
@@ -56,6 +57,8 @@ class RawScorecard(BaseModel):
     model_config = ConfigDict(extra="ignore")
     supplier_name: Any = None
     criteria: list[RawCriterionResult] = Field(default_factory=list)
+    strengths: Any = Field(default_factory=list)
+    weaknesses: Any = Field(default_factory=list)
     risks: Any = Field(default_factory=list)
     overall_summary: Any = ""
 
@@ -68,6 +71,7 @@ class CriterionResult(BaseModel):
     weight: float
     max_score: int
     score: int = Field(ge=0)
+    industry_score: int = Field(ge=0)
     justification: str
     evidence: str
     evidence_verified: bool
@@ -77,6 +81,8 @@ class CriterionResult(BaseModel):
 class ValidatedScorecard(BaseModel):
     supplier_name: str
     criteria: list[CriterionResult]
+    strengths: list[str]
+    weaknesses: list[str]
     risks: list[str]
     overall_summary: str
     warnings: list[str]
@@ -88,7 +94,12 @@ class ValidatedScorecard(BaseModel):
 
 
 def parse_llm_json(raw: str) -> tuple[dict | None, str]:
-    """Return (object, error). Tolerates markdown fences and leading prose."""
+    """Parse an evaluation reply (must contain a 'criteria' list)."""
+    return parse_json_object(raw, require_key="criteria")
+
+
+def parse_json_object(raw: str, require_key: str | None = None) -> tuple[dict | None, str]:
+    """Return (object, error). Tolerates markdown fences, leading prose and trailing commas."""
     if not raw or not raw.strip():
         return None, "empty response"
     text = raw.strip()
@@ -112,8 +123,8 @@ def parse_llm_json(raw: str) -> tuple[dict | None, str]:
         if not isinstance(obj, dict):
             last_error = "top-level JSON value is not an object"
             continue
-        if not isinstance(obj.get("criteria"), list):
-            last_error = "JSON object has no 'criteria' list"
+        if require_key and not isinstance(obj.get(require_key), list):
+            last_error = f"JSON object has no '{require_key}' list"
             continue
         return obj, ""
     return None, last_error
@@ -241,7 +252,7 @@ def validate_scorecard(
             warnings.append(f"{prefix} '{c['name']}' missing from LLM output; scored 0 (no evidence, no points).")
             results.append(CriterionResult(
                 criterion_id=cid, name=c["name"], weight=float(c["weight"]), max_score=max_score, score=0,
-                justification="Not returned by the evaluator; defaulted to 0.", evidence="",
+                industry_score=0, justification="Not returned by the evaluator; defaulted to 0.", evidence="",
                 evidence_verified=False, status="MISSING"))
             continue
 
@@ -261,6 +272,13 @@ def validate_scorecard(
         if reported_max is not None and reported_max != max_score:
             warnings.append(f"{prefix} '{c['name']}' reported max_score {reported_max}; database value {max_score} used.")
 
+        ind, ind_problem = _coerce_score(item.industry_score)
+        if ind is None:
+            if item.industry_score is not None:
+                warnings.append(f"{prefix} '{c['name']}' industry score {item.industry_score!r} unusable; peer score used.")
+            ind = value
+        ind = float(min(max(round(ind), 0), max_score))
+
         justification = str(item.justification or "").strip()
         if not justification:
             justification = "Not provided by evaluator."
@@ -274,13 +292,18 @@ def validate_scorecard(
 
         results.append(CriterionResult(
             criterion_id=cid, name=c["name"], weight=float(c["weight"]), max_score=max_score, score=int(value),
-            justification=justification, evidence=evidence, evidence_verified=verified, status=status))
+            industry_score=int(ind), justification=justification, evidence=evidence, evidence_verified=verified, status=status))
 
-    risks = card.risks if isinstance(card.risks, list) else [card.risks] if card.risks else []
+    def as_list(v):
+        items = v if isinstance(v, list) else [v] if v else []
+        return [str(x).strip() for x in items if str(x).strip()][:8]
+
     return ValidatedScorecard(
         supplier_name=supplier_name,
         criteria=results,
-        risks=[str(r) for r in risks if str(r).strip()],
+        strengths=as_list(card.strengths),
+        weaknesses=as_list(card.weaknesses),
+        risks=as_list(card.risks),
         overall_summary=str(card.overall_summary or "").strip(),
         warnings=warnings,
     )
