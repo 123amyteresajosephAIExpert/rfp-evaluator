@@ -4,7 +4,8 @@ An AI-assisted Streamlit app that turns a client's RFP into an evaluation scheme
 scores it against configurable criteria with quoted evidence, benchmarks suppliers against their peers and against
 industry best practice, and produces an explainable, reproducible leaderboard.
 
-**Live app:** `<paste your Streamlit Community Cloud URL here>`
+**Live app:** https://aj-rfp-evaluator.streamlit.app/  
+**Code:** https://github.com/123amyteresajosephAIExpert/rfp-evaluator  
 **How I built it:** see [`docs/Project_Approach.pdf`](docs/Project_Approach.pdf)
 
 **Stack:** Streamlit · SQLite · LangGraph · any OpenAI-compatible JSON LLM (Cohere by default; OpenRouter, OpenAI and
